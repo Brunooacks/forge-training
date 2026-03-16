@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LAB 02 — API Orchestration with Kiro · FORGE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Design Tokens ─────────────────────────────────────── */
+    :root {
+      --bg:            #03050f;
+      --bg-2:          #090d1f;
+      --bg-3:          #0f1428;
+      --bg-4:          #141930;
+      --cyan:          #00c8ff;
+      --cyan-dim:      #00c8ff22;
+      --cyan-glow:     #00c8ff44;
+      --green:         #00e5a0;
+      --yellow:        #ffc94d;
+      --red:           #ff5c7a;
+      --purple:        #a855f7;
+      --border:        #1e2540;
+      --border-bright: #2a3560;
+      --text:          #e8eaf6;
+      --text-dim:      #8892aa;
+      --text-muted:    #4d5570;
+      --font-head:     'Syne', sans-serif;
+      --font-body:     'DM Sans', sans-serif;
+      --radius:        12px;
+      --radius-sm:     8px;
+      --nav-h:         68px;
+      --transition:    0.22s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ─── Reset ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      padding-bottom: 80px;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    img { display: block; max-width: 100%; }
+
+    /* ─── Scrollbar ──────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-2); }
+    ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 99px; }
+
+    /* ─── Layout ─────────────────────────────────────────────── */
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px 120px;
+    }
+    .section { padding: 80px 0 0; }
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-head);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 16px;
+      height: 2px;
+      background: var(--border-bright);
+      border-radius: 99px;
+    }
+    .section-title {
+      font-family: var(--font-head);
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.15;
+      margin-bottom: 36px;
+    }
+
+    /* ─── NAV ────────────────────────────────────────────────── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      background: rgba(3,5,15,.75);
+      backdrop-filter: blur(18px) saturate(1.4);
+      -webkit-backdrop-filter: blur(18px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      text-decoration: none;
+    }
+    .nav-logo-text {
+      font-family: var(--font-head);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.01em;
+      color: var(--text);
+    }
+    .nav-logo-text span { color: var(--cyan); }
+    .nav-badge {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      color: var(--text-dim);
+      background: var(--bg-4);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 8px;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+    .nav-link {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-dim);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition), background var(--transition);
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+    .nav-link:hover { color: var(--text); background: var(--bg-3); }
+    .nav-link.active {
+      color: var(--purple);
+      background: rgba(168,85,247,.1);
+    }
+
+    /* hamburger */
+    .nav-hamburger {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      transition: color var(--transition), border-color var(--transition);
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .nav-hamburger:hover { color: var(--text); border-color: var(--border-bright); }
+    .nav-mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: var(--bg-2);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px 20px;
+      gap: 4px;
+    }
+    .nav-mobile-menu.open { display: flex; }
+    .nav-mobile-link {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-dim);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition), background var(--transition);
+    }
+    .nav-mobile-link:hover { color: var(--text); background: var(--bg-3); }
+    .nav-mobile-link.active { color: var(--purple); }
+
+    /* ─── BREADCRUMB ─────────────────────────────────────────── */
+    .breadcrumb {
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 18px 0 0;
+    }
+    .breadcrumb a { color: var(--text-dim); transition: color var(--transition); }
+    .breadcrumb a:hover { color: var(--text); }
+
+    /* ─── HERO ───────────────────────────────────────────────── */
+    .hero {
+      padding: 80px 0 72px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -180px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle at 50% 50%, rgba(168,85,247,.08) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      left: -80px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle at 50% 50%, rgba(0,200,255,.04) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(168,85,247,.08);
+      border: 1px solid rgba(168,85,247,.22);
+      border-radius: 99px;
+      padding: 6px 16px 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--purple);
+      letter-spacing: .04em;
+      margin-bottom: 26px;
+      animation: fadeUp .5s ease both;
+    }
+    .hero-pill-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--purple);
+      border-radius: 50%;
+      animation: pulse-purple 2s ease infinite;
+    }
+    @keyframes pulse-purple {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .45; transform: scale(.65); }
+    }
+    .hero h1 {
+      font-family: var(--font-head);
+      font-size: clamp(30px, 5vw, 58px);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -.02em;
+      color: var(--text);
+      max-width: 760px;
+      margin-bottom: 22px;
+      animation: fadeUp .5s .1s ease both;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--purple);
+    }
+    .hero-sub {
+      font-size: clamp(15px, 1.7vw, 17px);
+      color: var(--text-dim);
+      max-width: 580px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+      animation: fadeUp .5s .18s ease both;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 28px;
+      animation: fadeUp .5s .26s ease both;
+    }
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-dim);
+    }
+    .track-badge-hero {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 7px 16px;
+      border-radius: 99px;
+      border: 1px solid rgba(168,85,247,.3);
+      background: rgba(168,85,247,.1);
+      color: var(--purple);
+      animation: fadeUp .5s .34s ease both;
+    }
+    .track-badge-hero::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--purple);
+      border-radius: 50%;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── CARDS ──────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: border-color var(--transition);
+    }
+    .card:hover { border-color: var(--border-bright); }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+    .card-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .card-grid-5 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+    .card-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .card-title {
+      font-family: var(--font-head);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .card-body {
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.65;
+    }
+    .card-icon {
+      font-size: 24px;
+      margin-bottom: 14px;
+    }
+
+    /* concept cards */
+    .concept-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      transition: border-color var(--transition), transform var(--transition);
+    }
+    .concept-card:hover { border-color: var(--border-bright); transform: translateY(-2px); }
+    .concept-name {
+      font-family: var(--font-head);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .concept-name.purple { color: var(--purple); }
+    .concept-def {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* ─── BADGE ──────────────────────────────────────────────── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 99px;
+      border: 1px solid;
+      flex-shrink: 0;
+    }
+    .badge-gray    { color: var(--text-muted); border-color: var(--border); background: var(--bg-4); }
+    .badge-yellow  { color: var(--yellow); border-color: rgba(255,201,77,.3); background: rgba(255,201,77,.08); }
+    .badge-green   { color: var(--green); border-color: rgba(0,229,160,.3); background: rgba(0,229,160,.08); }
+    .badge-purple  { color: var(--purple); border-color: rgba(168,85,247,.3); background: rgba(168,85,247,.08); }
+    .badge-red     { color: var(--red); border-color: rgba(255,92,122,.3); background: rgba(255,92,122,.08); }
+    .badge-cyan    { color: var(--cyan); border-color: rgba(0,200,255,.3); background: rgba(0,200,255,.08); }
+
+    /* ─── TABS ───────────────────────────────────────────────── */
+    .tabs-wrap {
+      margin-bottom: 24px;
+    }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+    .tab {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 20px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      background: var(--bg-3);
+      min-height: 40px;
+      transition: color var(--transition), border-color var(--transition), background var(--transition);
+      cursor: pointer;
+    }
+    .tab:hover { color: var(--text); border-color: var(--border-bright); }
+    .tab.active {
+      background: rgba(168,85,247,.12);
+      color: var(--purple);
+      border-color: rgba(168,85,247,.3);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Objective cards */
+    .obj-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+    .obj-card {
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .obj-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .obj-verb {
+      font-family: var(--font-head);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .obj-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.55;
+    }
+
+    /* ─── CODE BLOCKS ────────────────────────────────────────── */
+    .code-block {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+    .code-lang {
+      font-family: var(--font-head);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: var(--bg-4);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 9px;
+    }
+    .code-lang.yaml { color: var(--purple); border-color: rgba(168,85,247,.3); background: rgba(168,85,247,.08); }
+    .code-lang.ts   { color: var(--cyan); border-color: rgba(0,200,255,.3); background: rgba(0,200,255,.08); }
+    .code-lang.json { color: var(--yellow); border-color: rgba(255,201,77,.3); background: rgba(255,201,77,.08); }
+    .code-filename {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      font-family: 'SFMono-Regular', 'Consolas', monospace;
+      flex: 1;
+    }
+    .code-body {
+      overflow-x: auto;
+      padding: 24px;
+    }
+    .code-body pre {
+      font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', monospace;
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text);
+      white-space: pre;
+      margin: 0;
+    }
+    .code-body pre .comment { color: #6272a4; font-style: italic; }
+    .code-body pre .key     { color: var(--cyan); }
+    .code-body pre .val-str { color: var(--green); }
+    .code-body pre .val-num { color: var(--yellow); }
+    .code-body pre .kw      { color: var(--purple); }
+    .code-body pre .type    { color: var(--yellow); }
+    .code-body pre .fn      { color: var(--cyan); }
+    .code-body pre .str     { color: var(--green); }
+
+    /* ─── ALERTS ─────────────────────────────────────────────── */
+    .alert {
+      display: flex;
+      gap: 14px;
+      padding: 18px 22px;
+      border-radius: var(--radius);
+      border: 1px solid;
+      margin-bottom: 14px;
+    }
+    .alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .alert-body { font-size: 14px; line-height: 1.6; }
+    .alert-title { font-weight: 700; margin-bottom: 4px; }
+    .alert-red   { background: rgba(255,92,122,.07); border-color: rgba(255,92,122,.25); color: var(--text); }
+    .alert-red .alert-title   { color: var(--red); }
+    .alert-yellow { background: rgba(255,201,77,.07); border-color: rgba(255,201,77,.25); color: var(--text); }
+    .alert-yellow .alert-title { color: var(--yellow); }
+
+    /* ─── TABLES ─────────────────────────────────────────────── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th {
+      font-family: var(--font-head);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: var(--bg-3);
+      padding: 14px 20px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 14px 20px;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.55;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--bg-3); }
+    td strong { color: var(--text); font-weight: 600; }
+    td em { font-style: normal; color: var(--purple); font-weight: 500; }
+    .td-bian { color: var(--cyan); font-weight: 600; font-family: var(--font-head); font-size: 13px; }
+
+    /* ─── SCENARIO CARD ──────────────────────────────────────── */
+    .scenario-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--purple);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-bottom: 28px;
+    }
+    .scenario-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--purple);
+      margin-bottom: 8px;
+    }
+    .scenario-text {
+      font-size: 15px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    /* ─── RETRY POLICY BLOCK ─────────────────────────────────── */
+    .policy-block {
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 26px;
+      margin-bottom: 24px;
+      font-family: 'SFMono-Regular', 'Consolas', monospace;
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.75;
+    }
+    .policy-block .policy-title {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+    .policy-block .highlight { color: var(--yellow); }
+
+    /* ─── CHECKLIST ──────────────────────────────────────────── */
+    .checklist { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+    .checklist li::before {
+      content: '□';
+      color: var(--border-bright);
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: -1px;
+    }
+
+    /* ─── NEXT STEPS ─────────────────────────────────────────── */
+    .next-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .next-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .next-card.purple::before { background: linear-gradient(90deg, var(--purple), transparent); }
+    .next-card.cyan::before { background: linear-gradient(90deg, var(--cyan), transparent); }
+    .next-card:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,.4); border-color: var(--border-bright); }
+    .next-card-num {
+      font-family: var(--font-head);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .next-card-title {
+      font-family: var(--font-head);
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .next-card.purple .next-card-title { color: var(--purple); }
+    .next-card.cyan .next-card-title { color: var(--cyan); }
+    .next-card-desc {
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    /* ─── BOTTOM NAV ─────────────────────────────────────────── */
+    .lab-nav-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 90;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+      padding: 0 32px;
+      gap: 16px;
+    }
+    .lab-nav-prev,
+    .lab-nav-next {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-3);
+      transition: color var(--transition), border-color var(--transition), background var(--transition);
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+    .lab-nav-prev:hover,
+    .lab-nav-next:hover { color: var(--text); border-color: var(--border-bright); background: var(--bg-4); }
+    .lab-nav-info {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      flex: 1;
+      text-align: center;
+    }
+
+    /* ─── SUBSECTION ─────────────────────────────────────────── */
+    .subsection { margin-top: 52px; }
+    .subsection-title {
+      font-family: var(--font-head);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ─── DIVIDER ────────────────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 40px 0;
+    }
+
+    /* ─── SCAFFOLD CARD ──────────────────────────────────────── */
+    .scaffold-card {
+      background: var(--bg-2);
+      border: 1px solid rgba(168,85,247,.25);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .scaffold-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      background: rgba(168,85,247,.05);
+      border-bottom: 1px solid rgba(168,85,247,.15);
+    }
+    .scaffold-title {
+      font-family: var(--font-head);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--purple);
+    }
+    .scaffold-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .page { padding: 0 18px 120px; }
+      .nav-inner { padding: 0 18px; gap: 14px; }
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .hero { padding: 60px 0 56px; }
+      .section { padding: 60px 0 0; }
+      .card-grid, .card-grid-3, .card-grid-5 { grid-template-columns: 1fr; }
+      .obj-grid { grid-template-columns: 1fr; }
+      .code-body { padding: 16px; }
+      .code-body pre { font-size: 12px; }
+      .lab-nav-bottom { padding: 0 16px; }
+      .lab-nav-info { display: none; }
+      table { font-size: 13px; }
+      th, td { padding: 12px 14px; }
+    }
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 26px; }
+      .hero-meta { gap: 7px; }
+      .meta-chip { font-size: 12px; padding: 5px 11px; }
+      .tabs { gap: 5px; }
+      .tab { font-size: 12px; padding: 7px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── NAV ─────────────────────────────────────────────────── -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-text">FORGE<span>.</span></span>
+        <span class="nav-badge">NTT DATA</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">← Labs</a>
+        <a href="lab-01.html" class="nav-link">LAB 01</a>
+        <a href="lab-02.html" class="nav-link active">LAB 02</a>
+      </div>
+      <button class="nav-hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <line x1="3" y1="6" x2="17" y2="6"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="14" x2="17" y2="14"/>
+        </svg>
+      </button>
+    </div>
+    <div class="nav-mobile-menu" id="mobileMenu">
+      <a href="index.html" class="nav-mobile-link">← Todos os Labs</a>
+      <a href="lab-01.html" class="nav-mobile-link">LAB 01 — Devin</a>
+      <a href="lab-02.html" class="nav-mobile-link active">LAB 02 — Kiro (atual)</a>
+    </div>
+  </nav>
+
+  <!-- ─── PAGE CONTENT ────────────────────────────────────────── -->
+  <div class="page">
+
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+      <a href="index.html">← Todos os Labs</a>
+      &nbsp;/&nbsp;
+      LAB 02 · API Orchestration with Kiro
+    </div>
+
+    <!-- ─── HERO ─────────────────────────────────────────────── -->
+    <section class="hero">
+      <div class="hero-pill">
+        <span class="hero-pill-dot"></span>
+        Foundation · Fase 1–2
+      </div>
+      <h1>LAB 02 — API Orchestration with <em>Kiro</em></h1>
+      <p class="hero-sub">
+        No ecossistema bancário, uma única operação de negócio raramente é atendida por uma única API. Aprenda a orquestrar fluxos complexos de integração como código — com controle de estado, tratamento de erros, retries automáticos e SLAs do BACEN cumpridos sistematicamente.
+      </p>
+      <div class="hero-meta">
+        <span class="meta-chip">⏱ 2h (E4) → 4h (E1)</span>
+        <span class="meta-chip">🏷 E1–E4</span>
+        <span class="meta-chip">🔀 Kiro</span>
+        <span class="meta-chip">🏦 Contexto Bancário</span>
+      </div>
+      <div class="track-badge-hero">Trilha Kiro</div>
+    </section>
+
+    <!-- ─── CONTEXTO ─────────────────────────────────────────── -->
+    <section class="section" id="contexto">
+      <div class="section-label">Contexto</div>
+      <h2 class="section-title">Por que orquestração de APIs importa no banco</h2>
+
+      <div class="card-grid" style="margin-bottom:32px;">
+        <div class="card">
+          <div class="card-icon">🏦</div>
+          <div class="card-title">O problema: APIs em cadeia</div>
+          <div class="card-body">
+            Uma transferência PIX envolve validação de saldo, checagem de fraude, consulta ao BACEN, execução da transferência e disparo de notificações — em sequência, com dependências, com retry em falha, e com SLA de 10 segundos para o cliente. Fazer isso manualmente com chamadas HTTP em cadeia resulta em código frágil, difícil de manter e impossível de monitorar.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎼</div>
+          <div class="card-title">A solução: Kiro como maestro</div>
+          <div class="card-body">
+            O <strong>Kiro</strong> resolve esse problema: é uma ferramenta de orquestração de APIs e workflows que permite definir fluxos complexos de integração como código, com controle de estado, tratamento de erros, retries automáticos e logs estruturados. Para engenheiros NTT, dominar Kiro significa implementar integrações entre sistemas legados e APIs modernas com rastreabilidade completa e conformidade regulatória sistemática.
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="subsection-title">Kiro vs Devin — modelo mental</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Devin</th>
+                <th>Kiro</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>O que faz</strong></td>
+                <td>Escreve e executa código autonomamente</td>
+                <td>Orquestra chamadas a APIs e sistemas em workflows</td>
+              </tr>
+              <tr>
+                <td><strong>Unidade de trabalho</strong></td>
+                <td>Sessão de desenvolvimento</td>
+                <td>Execução de workflow</td>
+              </tr>
+              <tr>
+                <td><strong>Quando usar</strong></td>
+                <td>Criar novos serviços, escrever testes, refatorar</td>
+                <td>Integrar sistemas existentes, orquestrar fluxos de negócio</td>
+              </tr>
+              <tr>
+                <td><strong>Output</strong></td>
+                <td>Código-fonte (TypeScript, Python, etc.)</td>
+                <td>Resultado do fluxo (JSON, eventos, side effects)</td>
+              </tr>
+              <tr>
+                <td><strong>Analogia bancária</strong></td>
+                <td>Engenheiro que constrói o sistema</td>
+                <td>Middleware que opera os sistemas em conjunto</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card" style="border-left:3px solid var(--purple);">
+          <div class="card-body">
+            💡 <strong style="color:var(--text)">Modelo mental:</strong> Use o Devin para construir os blocos. Use o Kiro para conectá-los e operar em produção.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── OBJETIVOS ─────────────────────────────────────────── -->
+    <section class="section" id="objetivos">
+      <div class="section-label">Objetivos</div>
+      <h2 class="section-title">O que você vai aprender</h2>
+
+      <div class="tabs-wrap">
+        <div class="tabs" id="objTabs">
+          <button class="tab active" data-target="obj-e1">E1 — Junior</button>
+          <button class="tab" data-target="obj-e2">E2 — Mid</button>
+          <button class="tab" data-target="obj-e3">E3 — Senior</button>
+          <button class="tab" data-target="obj-e4">E4 — Staff</button>
+        </div>
+
+        <!-- E1 -->
+        <div class="tab-panel active" id="obj-e1">
+          <div class="obj-grid">
+            <div class="obj-card">
+              <div class="obj-card-top">
+                <div class="obj-verb">Identificar</div>
+                <span class="badge badge-yellow">Compreender</span>
+              </div>
+              <div class="obj-desc">Os componentes de um workflow Kiro: steps, triggers, inputs, outputs e error handlers — reconhecendo cada peça na estrutura YAML.</div>
+            </div>
+            <div class="obj-card">
+              <div class="obj-card-top">
+                <div class="obj-verb">Executar</div>
+                <span class="badge badge-green">Aplicar</span>
+              </div>
+              <div class="obj-desc">Um workflow Kiro existente e interpretar os resultados de cada step, lendo os logs estruturados gerados pela execução.</div>
+            </div>
+            <div class="obj-card">
+              <div class="obj-card-top">
+                <div class="obj-verb">Distinguir</div>
+                <span class="badge badge-yellow">Compreender</span>
+              </div>
+              <div class="obj-desc">A diferença entre orquestração sequencial e paralela em cenários bancários — e quando cada abordagem é mais adequada para o SLA.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- E2 -->
+        <div class="tab-panel" id="obj-e2">
+          <div class="obj-grid">
+            <div class="obj-card">
+              <div class="obj-card-top">
+                <div class="obj-verb">Implementar</div>
+                <span class="badge badge-green">Aplicar</span>
+              </div>
+              <div class="obj-desc">Um workflow completo com steps encadeados, passagem de contexto entre steps e error handling configurado para cada tipo de falha.</div>
+            </div>
+            <div class="obj-card">
+              <div class="obj-card-top">
+                <div class="obj-verb">Analisar</div>
+                <span class="badge badge-purple">Analisar</span>
+              </div>
+              <div class="obj-desc">O comportamento de retry em falha e ajustar políticas de retentativa para SLAs bancários — garantindo idempotência em operações de escrita.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- E3 -->
+        <div class="tab-panel" id="obj-e3">
+          <div class="obj-grid">
+            <div class="obj-card">
+              <div class="obj-card-top">
+                <div class="obj-verb">Avaliar</div>
+                <span class="badge badge-red">Avaliar</span>
+              </div>
+              <div class="obj-desc">Trade-offs de design de workflow: granularidade de steps, estratégias de compensação (rollback), e impacto nos SLAs regulatórios do BACEN.</div>
+            </div>
+            <div class="obj-card">
+              <div class="obj-card-top">
+                <div class="obj-verb">Criar</div>
+                <span class="badge badge-cyan">Criar</span>
+              </div>
+              <div class="obj-desc">Templates de workflow reutilizáveis com BIAN domain mapping e conformidade LGPD embutida — prontos para uso pelo time.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- E4 -->
+        <div class="tab-panel" id="obj-e4">
+          <div class="obj-grid">
+            <div class="obj-card">
+              <div class="obj-card-top">
+                <div class="obj-verb">Definir</div>
+                <span class="badge badge-cyan">Criar</span>
+              </div>
+              <div class="obj-desc">Padrões de orquestração para o time, incluindo convenções de naming, logging estruturado, e governança de workflows em produção bancária.</div>
+            </div>
+            <div class="obj-card">
+              <div class="obj-card-top">
+                <div class="obj-verb">Projetar</div>
+                <span class="badge badge-cyan">Criar</span>
+              </div>
+              <div class="obj-desc">Frameworks de orquestração bancária reutilizáveis com separação de domínios BIAN e checklist de compliance para aprovação de workflows.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── CONCEITOS ─────────────────────────────────────────── -->
+    <section class="section" id="conceitos">
+      <div class="section-label">Conceitos Fundamentais</div>
+      <h2 class="section-title">Vocabulário e arquitetura do Kiro</h2>
+
+      <!-- API Orchestration — conceitos centrais -->
+      <div class="subsection" style="margin-top:0;">
+        <div class="subsection-title">API Orchestration — conceitos centrais</div>
+        <div class="card-grid-3" style="grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin-bottom:0;">
+          <div class="concept-card">
+            <div class="concept-name">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Workflow
+            </div>
+            <div class="concept-def">Definição declarativa de um fluxo de negócio. Composto por steps encadeados com entradas, saídas e condições de execução.</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-name">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M7 4v3l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Step
+            </div>
+            <div class="concept-def">Unidade atômica de execução dentro de um workflow. Pode chamar uma API HTTP, executar uma função, transformar dados ou chamar outro workflow.</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-name">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 5-10 5V8.5l7-1.5-7-1.5V2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Trigger
+            </div>
+            <div class="concept-def">O que inicia o workflow — pode ser uma chamada HTTP, um evento em fila (Kafka, SQS), um agendamento (cron) ou outro workflow.</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-name">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="4" width="10" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M5 4V3a2 2 0 114 0v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Context
+            </div>
+            <div class="concept-def">Objeto compartilhado entre steps que carrega o estado da execução — inputs originais, outputs intermediários e metadados de rastreamento.</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-name">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v3M7 9v3M2 7h3m4 0h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="7" cy="7" r="2" stroke="currentColor" stroke-width="1.5"/></svg>
+              Error Handler
+            </div>
+            <div class="concept-def">Lógica de recuperação por step ou por workflow — retry com backoff, fallback para valores default, ou compensação (rollback).</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- APIs bancárias brasileiras -->
+      <div class="subsection">
+        <div class="subsection-title">Integração com APIs bancárias brasileiras</div>
+        <p style="font-size:14px;color:var(--text-dim);line-height:1.65;margin-bottom:20px;">
+          Os bancos com os quais a NTT trabalha (Itaú, Nubank, Santander, Banco do Brasil, Bradesco) operam com os seguintes sistemas que o Kiro tipicamente orquestra:
+        </p>
+        <div class="card-grid-5" style="grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));">
+          <div class="concept-card">
+            <div class="concept-name purple">PIX (BACEN SPI)</div>
+            <div class="concept-def">Sistema de Pagamentos Instantâneos — SLA de 10s para liquidação, disponível 24/7/365.</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-name purple">TED / DOC</div>
+            <div class="concept-def">Transferências entre bancos via STR (Sistema de Transferência de Reservas) — horários de janela operacional.</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-name purple">Open Finance</div>
+            <div class="concept-def">APIs padronizadas pelo BACEN para compartilhamento de dados — OAuth 2.0 obrigatório.</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-name purple">Core Banking</div>
+            <div class="concept-def">Sistemas internos de conta corrente, limites e saldo — latência variável, frequentemente legado.</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-name purple">Antifraude</div>
+            <div class="concept-def">Serviços internos ou terceirizados (ex: Konduto, ClearSale) — timeout crítico para UX.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BIAN Service Domains -->
+      <div class="subsection">
+        <div class="subsection-title">BIAN Service Domains — mapeamento para orquestração</div>
+        <p style="font-size:14px;color:var(--text-dim);line-height:1.65;margin-bottom:20px;">
+          O BIAN (Banking Industry Architecture Network) define os domínios de serviço bancário de forma padronizada. Em workflows Kiro, cada BIAN Service Domain idealmente corresponde a um grupo lógico de steps, com separação clara de responsabilidade — facilitando manutenção, auditoria e reuso.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>BIAN Service Domain</th>
+                <th>O que representa</th>
+                <th>Steps típicos no workflow</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-bian">Customer Management</td>
+                <td>Dados cadastrais e KYC do cliente</td>
+                <td>Validar identidade, buscar perfil de risco</td>
+              </tr>
+              <tr>
+                <td class="td-bian">Payment Execution Service</td>
+                <td>Execução de pagamentos (PIX, TED)</td>
+                <td>Iniciar pagamento, confirmar liquidação</td>
+              </tr>
+              <tr>
+                <td class="td-bian">Account Management</td>
+                <td>Saldo, limites e movimentação de conta</td>
+                <td>Consultar saldo, reservar limite, debitar</td>
+              </tr>
+              <tr>
+                <td class="td-bian">Fraud Detection</td>
+                <td>Análise de risco e antifraude</td>
+                <td>Score de risco, bloqueio preventivo</td>
+              </tr>
+              <tr>
+                <td class="td-bian">Notification Management</td>
+                <td>Comunicação ao cliente</td>
+                <td>Push, SMS, e-mail pós-transação</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Error handling e retry -->
+      <div class="subsection">
+        <div class="subsection-title">Error handling e retry para SLAs bancários</div>
+        <p style="font-size:14px;color:var(--text-dim);line-height:1.65;margin-bottom:20px;">
+          O BACEN exige que transações PIX sejam liquidadas em até 10 segundos. Isso impõe regras específicas para retries:
+        </p>
+        <div class="policy-block">
+          <div class="policy-title">Política de retry bancária padrão</div>
+          - Timeout por step: <span class="highlight">2s (APIs internas)</span> / <span class="highlight">5s (APIs externas)</span><br>
+          - Max retries: <span class="highlight">3 tentativas</span><br>
+          - Backoff: <span class="highlight">exponencial (1s, 2s, 4s)</span><br>
+          - Circuit breaker: <span class="highlight">após 5 falhas consecutivas, abrir por 30s</span><br>
+          - Total máximo do workflow: <span class="highlight">8s</span> (margem de 2s para overhead de rede)
+        </div>
+        <div class="card-grid" style="margin-bottom:0;">
+          <div class="concept-card">
+            <div class="concept-name">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7a5 5 0 1010 0H2z" stroke="currentColor" stroke-width="1.5"/><path d="M7 2v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Retry sem estado
+            </div>
+            <div class="concept-def">Repete toda a operação do zero. Adequado para operações idempotentes por natureza (consultas GET). Perigoso para operações de escrita financeira.</div>
+          </div>
+          <div class="concept-card">
+            <div class="concept-name purple">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 4h8M3 7h5M3 10h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Retry com idempotência
+            </div>
+            <div class="concept-def">Usa chave de idempotência para evitar duplicação de débito. Em contexto bancário, <strong>toda operação de escrita deve ser idempotente</strong> — obrigatório para chamadas ao SPI do BACEN.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── DEMONSTRAÇÃO ──────────────────────────────────────── -->
+    <section class="section" id="demo">
+      <div class="section-label">Demonstração Prática</div>
+      <h2 class="section-title">Workflow de análise de crédito</h2>
+
+      <div class="scenario-card">
+        <div class="scenario-label">Cenário NTT</div>
+        <div class="scenario-text">
+          O banco precisa de um fluxo de análise de crédito para pré-aprovação de empréstimo pessoal. O fluxo consulta o saldo da conta, verifica o limite pré-aprovado e retorna uma decisão de crédito. Esse fluxo é chamado por 3 sistemas diferentes (app mobile, internet banking, gerente PJ) — por isso precisa ser um workflow Kiro centralizado, não lógica replicada em cada sistema.
+        </div>
+      </div>
+
+      <!-- YAML workflow -->
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang yaml">YAML</span>
+          <span class="code-filename">credit-assessment.workflow.yaml</span>
+        </div>
+        <div class="code-body">
+<pre><span class="comment"># workflows/credit-assessment.workflow.yaml</span>
+<span class="key">name</span>: credit-assessment
+<span class="key">version</span>: <span class="str">"1.0"</span>
+<span class="key">description</span>: <span class="str">"Avaliação de crédito - BIAN: Customer Management + Account Management"</span>
+
+<span class="key">trigger</span>:
+  <span class="key">type</span>: http
+  <span class="key">method</span>: POST
+  <span class="key">path</span>: /workflows/credit-assessment
+  <span class="key">auth</span>: bearer
+
+<span class="key">input</span>:
+  <span class="key">schema</span>:
+    <span class="key">customer_id</span>:
+      <span class="key">type</span>: string
+      <span class="key">required</span>: <span class="kw">true</span>
+    <span class="key">requested_amount</span>:
+      <span class="key">type</span>: number
+      <span class="key">required</span>: <span class="kw">true</span>
+      <span class="key">minimum</span>: <span class="val-num">100</span>
+      <span class="key">maximum</span>: <span class="val-num">50000</span>
+    <span class="key">product_type</span>:
+      <span class="key">type</span>: string
+      <span class="key">enum</span>: [personal_loan, credit_card, overdraft]
+
+<span class="key">steps</span>:
+  <span class="comment"># BIAN: Customer Management — validar identidade e perfil</span>
+  - <span class="key">id</span>: validate-customer
+    <span class="key">name</span>: <span class="str">"Validar cliente e status KYC"</span>
+    <span class="key">type</span>: http
+    <span class="key">config</span>:
+      <span class="key">url</span>: <span class="str">"{{env.CORE_BANKING_URL}}/customers/{{input.customer_id}}"</span>
+      <span class="key">method</span>: GET
+      <span class="key">headers</span>:
+        <span class="key">Authorization</span>: <span class="str">"Bearer {{env.CORE_BANKING_TOKEN}}"</span>
+        <span class="key">x-correlation-id</span>: <span class="str">"{{workflow.execution_id}}"</span>
+      <span class="key">timeout</span>: <span class="val-num">2000</span>
+    <span class="key">retry</span>:
+      <span class="key">max_attempts</span>: <span class="val-num">3</span>
+      <span class="key">backoff</span>: exponential
+      <span class="key">initial_delay</span>: <span class="val-num">500</span>
+    <span class="key">on_error</span>:
+      <span class="key">action</span>: fail
+      <span class="key">message</span>: <span class="str">"Cliente não encontrado ou KYC pendente"</span>
+
+  <span class="comment"># BIAN: Account Management — consultar saldo</span>
+  - <span class="key">id</span>: get-account-balance
+    <span class="key">name</span>: <span class="str">"Consultar saldo e limite disponível"</span>
+    <span class="key">type</span>: http
+    <span class="key">depends_on</span>: [validate-customer]
+    <span class="key">config</span>:
+      <span class="key">url</span>: <span class="str">"{{env.CORE_BANKING_URL}}/accounts/{{steps.validate-customer.output.account_id}}/balance"</span>
+      <span class="key">method</span>: GET
+      <span class="key">headers</span>:
+        <span class="key">Authorization</span>: <span class="str">"Bearer {{env.CORE_BANKING_TOKEN}}"</span>
+        <span class="key">x-correlation-id</span>: <span class="str">"{{workflow.execution_id}}"</span>
+      <span class="key">timeout</span>: <span class="val-num">2000</span>
+    <span class="key">retry</span>:
+      <span class="key">max_attempts</span>: <span class="val-num">3</span>
+      <span class="key">backoff</span>: exponential
+      <span class="key">initial_delay</span>: <span class="val-num">500</span>
+
+  <span class="comment"># BIAN: Customer Management — score de risco (serviço externo)</span>
+  - <span class="key">id</span>: get-risk-score
+    <span class="key">name</span>: <span class="str">"Obter score de crédito"</span>
+    <span class="key">type</span>: http
+    <span class="key">depends_on</span>: [validate-customer]
+    <span class="key">config</span>:
+      <span class="key">url</span>: <span class="str">"{{env.CREDIT_BUREAU_URL}}/score"</span>
+      <span class="key">method</span>: POST
+      <span class="key">headers</span>:
+        <span class="key">x-api-key</span>: <span class="str">"{{env.CREDIT_BUREAU_KEY}}"</span>
+        <span class="key">x-correlation-id</span>: <span class="str">"{{workflow.execution_id}}"</span>
+      <span class="key">body</span>:
+        <span class="comment"># CPF mascarado no log — apenas os últimos 4 dígitos expostos para rastreamento</span>
+        <span class="key">document_hash</span>: <span class="str">"{{steps.validate-customer.output.document_hash}}"</span>
+        <span class="key">product_type</span>: <span class="str">"{{input.product_type}}"</span>
+      <span class="key">timeout</span>: <span class="val-num">3000</span>
+    <span class="key">retry</span>:
+      <span class="key">max_attempts</span>: <span class="val-num">2</span>
+      <span class="key">backoff</span>: exponential
+      <span class="key">initial_delay</span>: <span class="val-num">1000</span>
+    <span class="key">on_error</span>:
+      <span class="key">action</span>: use_default
+      <span class="key">default_output</span>:
+        <span class="key">score</span>: <span class="val-num">0</span>
+        <span class="key">recommendation</span>: denied
+
+  <span class="comment"># BIAN: Payment Execution Service — decisão de crédito</span>
+  - <span class="key">id</span>: credit-decision
+    <span class="key">name</span>: <span class="str">"Calcular decisão de crédito"</span>
+    <span class="key">type</span>: function
+    <span class="key">depends_on</span>: [get-account-balance, get-risk-score]
+    <span class="key">config</span>:
+      <span class="key">handler</span>: <span class="str">"./handlers/credit-decision.handler"</span>
+      <span class="key">function</span>: evaluate
+      <span class="key">input</span>:
+        <span class="key">balance</span>: <span class="str">"{{steps.get-account-balance.output.available_balance}}"</span>
+        <span class="key">score</span>: <span class="str">"{{steps.get-risk-score.output.score}}"</span>
+        <span class="key">requested_amount</span>: <span class="str">"{{input.requested_amount}}"</span>
+        <span class="key">product_type</span>: <span class="str">"{{input.product_type}}"</span>
+
+<span class="key">output</span>:
+  <span class="key">decision</span>: <span class="str">"{{steps.credit-decision.output.decision}}"</span>
+  <span class="key">approved_amount</span>: <span class="str">"{{steps.credit-decision.output.approved_amount}}"</span>
+  <span class="key">interest_rate</span>: <span class="str">"{{steps.credit-decision.output.interest_rate}}"</span>
+  <span class="key">valid_until</span>: <span class="str">"{{steps.credit-decision.output.valid_until}}"</span>
+  <span class="key">execution_id</span>: <span class="str">"{{workflow.execution_id}}"</span>
+
+<span class="key">logging</span>:
+  <span class="comment"># LGPD: mascarar CPF e dados de conta em todos os logs</span>
+  <span class="key">mask_fields</span>: [document, cpf, account_number, document_hash]
+  <span class="key">level</span>: info
+  <span class="key">include_step_duration</span>: <span class="kw">true</span></pre>
+        </div>
+      </div>
+
+      <!-- TypeScript handler -->
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang ts">TypeScript</span>
+          <span class="code-filename">credit-decision.handler.ts</span>
+        </div>
+        <div class="code-body">
+<pre><span class="comment">// handlers/credit-decision.handler.ts</span>
+
+<span class="kw">interface</span> <span class="type">CreditDecisionInput</span> {
+  balance: <span class="type">number</span>;
+  score: <span class="type">number</span>;
+  requested_amount: <span class="type">number</span>;
+  product_type: <span class="str">'personal_loan'</span> | <span class="str">'credit_card'</span> | <span class="str">'overdraft'</span>;
+}
+
+<span class="kw">interface</span> <span class="type">CreditDecisionOutput</span> {
+  decision: <span class="str">'approved'</span> | <span class="str">'denied'</span> | <span class="str">'partial'</span>;
+  approved_amount: <span class="type">number</span>;
+  interest_rate: <span class="type">number</span> | <span class="kw">null</span>;
+  valid_until: <span class="type">string</span> | <span class="kw">null</span>;
+  denial_reason?: <span class="type">string</span>;
+}
+
+<span class="comment">// Regras de negócio: baseadas nos parâmetros BACEN Resolução 4.966/2021</span>
+<span class="comment">// Por quê: limites de exposição por produto são regulados — não é lógica livre</span>
+<span class="kw">const</span> SCORE_THRESHOLDS = {
+  personal_loan: { minimum: <span class="val-num">600</span>, full_approval: <span class="val-num">750</span> },
+  credit_card:   { minimum: <span class="val-num">500</span>, full_approval: <span class="val-num">700</span> },
+  overdraft:     { minimum: <span class="val-num">400</span>, full_approval: <span class="val-num">650</span> }
+};
+
+<span class="kw">const</span> RATE_TABLE: <span class="type">Record</span>&lt;<span class="type">string</span>, <span class="type">Record</span>&lt;<span class="type">string</span>, <span class="type">number</span>&gt;&gt; = {
+  personal_loan: { high: <span class="val-num">0.0199</span>, medium: <span class="val-num">0.0289</span>, low: <span class="val-num">0.0399</span> },
+  credit_card:   { high: <span class="val-num">0.0799</span>, medium: <span class="val-num">0.0999</span>, low: <span class="val-num">0.1299</span> },
+  overdraft:     { high: <span class="val-num">0.0599</span>, medium: <span class="val-num">0.0799</span>, low: <span class="val-num">0.1099</span> }
+};
+
+<span class="kw">export async function</span> <span class="fn">evaluate</span>(input: <span class="type">CreditDecisionInput</span>): <span class="type">Promise</span>&lt;<span class="type">CreditDecisionOutput</span>&gt; {
+  <span class="kw">const</span> thresholds = SCORE_THRESHOLDS[input.product_type];
+  <span class="kw">const</span> rates = RATE_TABLE[input.product_type];
+
+  <span class="comment">// Negar se score abaixo do mínimo</span>
+  <span class="kw">if</span> (input.score &lt; thresholds.minimum) {
+    <span class="kw">return</span> {
+      decision: <span class="str">'denied'</span>,
+      approved_amount: <span class="val-num">0</span>,
+      interest_rate: <span class="kw">null</span>,
+      valid_until: <span class="kw">null</span>,
+      denial_reason: <span class="str">'score_below_minimum'</span>
+    };
+  }
+
+  <span class="comment">// Negar se saldo insuficiente como garantia (regra interna do banco)</span>
+  <span class="kw">if</span> (input.balance &lt; input.requested_amount * <span class="val-num">0.1</span>) {
+    <span class="kw">return</span> {
+      decision: <span class="str">'denied'</span>,
+      approved_amount: <span class="val-num">0</span>,
+      interest_rate: <span class="kw">null</span>,
+      valid_until: <span class="kw">null</span>,
+      denial_reason: <span class="str">'insufficient_balance_ratio'</span>
+    };
+  }
+
+  <span class="kw">const</span> scoreCategory = input.score &gt;= thresholds.full_approval ? <span class="str">'high'</span>
+    : input.score &gt;= (thresholds.minimum + <span class="val-num">100</span>) ? <span class="str">'medium'</span>
+    : <span class="str">'low'</span>;
+
+  <span class="kw">const</span> rate = rates[scoreCategory];
+
+  <span class="comment">// Aprovação parcial se score médio e valor alto</span>
+  <span class="kw">const</span> isPartial = scoreCategory === <span class="str">'low'</span> &amp;&amp; input.requested_amount &gt; <span class="val-num">5000</span>;
+  <span class="kw">const</span> approved = isPartial
+    ? <span class="fn">Math.min</span>(input.requested_amount * <span class="val-num">0.5</span>, <span class="val-num">5000</span>)
+    : input.requested_amount;
+
+  <span class="comment">// Validade da oferta: 24h (padrão Open Finance)</span>
+  <span class="kw">const</span> validUntil = <span class="kw">new</span> <span class="fn">Date</span>(<span class="fn">Date.now</span>() + <span class="val-num">24</span> * <span class="val-num">60</span> * <span class="val-num">60</span> * <span class="val-num">1000</span>).<span class="fn">toISOString</span>();
+
+  <span class="kw">return</span> {
+    decision: isPartial ? <span class="str">'partial'</span> : <span class="str">'approved'</span>,
+    approved_amount: approved,
+    interest_rate: rate,
+    valid_until: validUntil
+  };
+}</pre>
+        </div>
+      </div>
+
+      <!-- Error handling example -->
+      <div class="subsection-title" style="margin-top:36px;margin-bottom:18px;">Como o Kiro trata erros e retries</div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang ts">TypeScript</span>
+          <span class="code-filename">error-handling example — get-risk-score fallback</span>
+        </div>
+        <div class="code-body">
+<pre><span class="comment">// Exemplo: o que acontece quando o serviço de score externo está fora do ar</span>
+
+<span class="comment">// 1. Tentativa 1 → timeout de 3s → falha</span>
+<span class="comment">// 2. Kiro aguarda 1s (backoff inicial) → Tentativa 2 → falha</span>
+<span class="comment">// 3. Kiro aguarda 2s (backoff exponencial) → Tentativa 3 → falha</span>
+<span class="comment">// 4. on_error: use_default → workflow continua com score = 0</span>
+
+<span class="comment">// O log estruturado que o Kiro gera (campos sensíveis já mascarados):</span>
+{
+  <span class="str">"workflow"</span>: <span class="str">"credit-assessment"</span>,
+  <span class="str">"execution_id"</span>: <span class="str">"wf_01HX4K9M3P7Q"</span>,
+  <span class="str">"step"</span>: <span class="str">"get-risk-score"</span>,
+  <span class="str">"status"</span>: <span class="str">"fallback_used"</span>,
+  <span class="str">"attempts"</span>: <span class="val-num">3</span>,
+  <span class="str">"total_duration_ms"</span>: <span class="val-num">9012</span>,
+  <span class="str">"fallback_reason"</span>: <span class="str">"external_service_timeout"</span>,
+  <span class="str">"customer_id"</span>: <span class="str">"cust_9182"</span>,  <span class="comment">// ID interno — não é CPF</span>
+  <span class="str">"timestamp"</span>: <span class="str">"2026-03-15T14:32:10.004Z"</span>
+}
+
+<span class="comment">// O que NÃO aparece no log (mascarado pelo campo mask_fields):</span>
+<span class="comment">// ✓ CPF do cliente → mascarado</span>
+<span class="comment">// ✓ document_hash → mascarado</span>
+<span class="comment">// ✓ account_number → mascarado</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── EXERCÍCIO ─────────────────────────────────────────── -->
+    <section class="section" id="exercicio">
+      <div class="section-label">Exercício</div>
+      <h2 class="section-title">Sua vez — Workflow de transferência PIX</h2>
+
+      <div class="scenario-card">
+        <div class="scenario-label">Cenário NTT</div>
+        <div class="scenario-text">
+          O banco precisa de um workflow centralizado para transferências PIX que possa ser chamado por qualquer canal (app, internet banking, agência). O fluxo deve: validar saldo do remetente, checar regras de antifraude, executar a transferência via SPI (BACEN) e disparar notificações ao remetente e destinatário.
+        </div>
+      </div>
+
+      <!-- Task tabs -->
+      <div class="tabs-wrap">
+        <div class="tabs" id="exTabs">
+          <button class="tab active" data-target="ex-base">Tarefa Base</button>
+          <button class="tab" data-target="ex-e2">Camada E2</button>
+          <button class="tab" data-target="ex-e3">Camada E3</button>
+          <button class="tab" data-target="ex-e4">Camada E4</button>
+        </div>
+
+        <!-- Base -->
+        <div class="tab-panel active" id="ex-base">
+          <div class="card" style="margin-bottom:20px;">
+            <div class="card-title">Implementar o workflow <code style="background:var(--bg-4);border-radius:4px;padding:2px 7px;font-size:13px;color:var(--cyan);">pix-transfer</code> com 5 steps</div>
+            <div class="card-body" style="margin-bottom:18px;">
+              <div style="font-family:'SFMono-Regular',monospace;font-size:13px;line-height:2;color:var(--text-dim);background:var(--bg-3);border-radius:var(--radius-sm);padding:16px 20px;border:1px solid var(--border);">
+                1. <span style="color:var(--cyan)">validate-balance</span>   → Consultar saldo disponível (Account Management)<br>
+                2. <span style="color:var(--cyan)">fraud-check</span>        → Score antifraude por transação (Fraud Detection)<br>
+                3. <span style="color:var(--cyan)">execute-pix</span>        → Enviar para o SPI do BACEN (Payment Execution Service)<br>
+                4. <span style="color:var(--cyan)">notify-sender</span>      → Notificar remetente (Notification Management)<br>
+                5. <span style="color:var(--cyan)">notify-receiver</span>    → Notificar destinatário (Notification Management) [paralelo ao step 4]
+              </div>
+            </div>
+            <div class="card-label" style="margin-bottom:12px;">Input esperado</div>
+            <div style="font-family:'SFMono-Regular',monospace;font-size:13px;line-height:1.7;color:var(--text-dim);background:var(--bg-3);border-radius:var(--radius-sm);padding:16px 20px;border:1px solid var(--border);margin-bottom:18px;">
+              {<br>
+              &nbsp;&nbsp;<span style="color:var(--green)">"sender_account_id"</span>: <span style="color:var(--str)">"acc_123"</span>,<br>
+              &nbsp;&nbsp;<span style="color:var(--green)">"receiver_pix_key"</span>: <span style="color:var(--str)">"destinatario@email.com"</span>,<br>
+              &nbsp;&nbsp;<span style="color:var(--green)">"amount"</span>: <span style="color:var(--yellow)">250.00</span>,<br>
+              &nbsp;&nbsp;<span style="color:var(--green)">"description"</span>: <span style="color:var(--str)">"Pagamento aluguel"</span><br>
+              }
+            </div>
+          </div>
+          <div class="card-label" style="margin-bottom:12px;">Critérios de Conclusão — Base (todos os níveis)</div>
+          <ul class="checklist">
+            <li>Workflow YAML com os 5 steps acima na ordem correta</li>
+            <li>Steps 4 e 5 executam em paralelo (sem <code style="background:var(--bg-4);border-radius:3px;padding:1px 5px;font-size:12px;">depends_on</code> linear entre eles)</li>
+            <li>Cada step com timeout adequado ao SLA PIX (total &lt; 8s)</li>
+            <li>Output do workflow inclui <code style="background:var(--bg-4);border-radius:3px;padding:1px 5px;font-size:12px;">transaction_id</code> e <code style="background:var(--bg-4);border-radius:3px;padding:1px 5px;font-size:12px;">status</code></li>
+          </ul>
+        </div>
+
+        <!-- E2 -->
+        <div class="tab-panel" id="ex-e2">
+          <div class="card" style="margin-bottom:20px;border-color:rgba(168,85,247,.2);">
+            <div class="card-label" style="color:var(--purple);">Critérios extras — E2</div>
+            <ul class="checklist">
+              <li>Step <code style="background:var(--bg-4);border-radius:3px;padding:1px 5px;font-size:12px;">validate-balance</code> deve falhar o workflow com mensagem clara se saldo &lt; amount</li>
+              <li>Step <code style="background:var(--bg-4);border-radius:3px;padding:1px 5px;font-size:12px;">fraud-check</code> deve ter fallback para <code style="background:var(--bg-4);border-radius:3px;padding:1px 5px;font-size:12px;">score: 100</code> (conservador) se serviço indisponível</li>
+              <li>Step <code style="background:var(--bg-4);border-radius:3px;padding:1px 5px;font-size:12px;">execute-pix</code> deve ter política de retry com idempotência — incluir <code style="background:var(--bg-4);border-radius:3px;padding:1px 5px;font-size:12px;">idempotency_key</code> no header gerado a partir do <code style="background:var(--bg-4);border-radius:3px;padding:1px 5px;font-size:12px;">execution_id</code></li>
+              <li>Step <code style="background:var(--bg-4);border-radius:3px;padding:1px 5px;font-size:12px;">execute-pix</code> não deve ter retry sem idempotência configurada (risco de débito duplo)</li>
+            </ul>
+          </div>
+          <div class="alert alert-yellow">
+            <div class="alert-icon">💡</div>
+            <div class="alert-body">
+              <div class="alert-title">Dica E2</div>
+              A chave de idempotência deve ser derivada do <code>workflow.execution_id</code>, não gerada aleatoriamente a cada retry. Use <code>&#123;&#123;workflow.execution_id&#125;&#125;-pix</code> como valor do header <code>x-idempotency-key</code>.
+            </div>
+          </div>
+        </div>
+
+        <!-- E3 -->
+        <div class="tab-panel" id="ex-e3">
+          <div class="card" style="margin-bottom:20px;border-color:rgba(168,85,247,.2);">
+            <div class="card-label" style="color:var(--purple);">Critérios extras — E3 (além de E2)</div>
+            <ul class="checklist">
+              <li>Todos os campos com CPF, chave PIX e número de conta mascarados no log (<code style="background:var(--bg-4);border-radius:3px;padding:1px 5px;font-size:12px;">mask_fields</code> no YAML)</li>
+              <li>Comentários no YAML mapeando cada step ao BIAN Service Domain correspondente</li>
+              <li>Handler TypeScript para <code style="background:var(--bg-4);border-radius:3px;padding:1px 5px;font-size:12px;">fraud-check</code> que loga o resultado sem expor dados do cliente</li>
+              <li>Incluir <code style="background:var(--bg-4);border-radius:3px;padding:1px 5px;font-size:12px;">x-correlation-id</code> gerado a partir do <code style="background:var(--bg-4);border-radius:3px;padding:1px 5px;font-size:12px;">execution_id</code> em todos os steps para rastreabilidade de ponta a ponta</li>
+            </ul>
+          </div>
+          <div class="card" style="border-color:rgba(168,85,247,.15);background:rgba(168,85,247,.03);">
+            <div class="card-label" style="color:var(--purple);margin-bottom:12px;">Desafio adicional E3</div>
+            <div class="card-body" style="margin-bottom:16px;">
+              Crie um template de workflow reutilizável para qualquer transferência bancária (PIX, TED, DOC) com slots configuráveis por tipo de operação. O template deve ter BIAN domain mapping embutido como comentários-padrão.
+            </div>
+            <div style="font-family:'SFMono-Regular',monospace;font-size:13px;line-height:1.75;color:var(--text-dim);background:var(--bg-3);border-radius:var(--radius-sm);padding:16px 20px;border:1px solid var(--border);">
+              <span style="color:#6272a4"># Template base — preencha os slots marcados com [SLOT]</span><br>
+              <span style="color:var(--cyan)">name</span>: [SLOT: nome do workflow]<br>
+              <span style="color:var(--cyan)">description</span>: <span style="color:var(--green)">"[SLOT: BIAN domain] — [SLOT: descrição da operação]"</span><br>
+              <span style="color:#6272a4"># ... você implementa o restante</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- E4 -->
+        <div class="tab-panel" id="ex-e4">
+          <div class="card" style="margin-bottom:18px;border-color:rgba(168,85,247,.2);">
+            <div class="card-label" style="color:var(--purple);margin-bottom:14px;">Desafio completo E4</div>
+            <div class="card-body" style="margin-bottom:18px;">Além de implementar o workflow, produza os 3 entregáveis abaixo:</div>
+
+            <div style="margin-bottom:20px;">
+              <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px;">1. Template de workflow bancário para o time</div>
+              <ul class="checklist">
+                <li>Convenções de naming (steps, variáveis, outputs)</li>
+                <li>Política de timeout por categoria de serviço (interno / externo / BACEN)</li>
+                <li>Estrutura padrão de logging com <code style="background:var(--bg-4);border-radius:3px;padding:1px 5px;font-size:12px;">mask_fields</code> pré-configurados para dados sensíveis bancários</li>
+              </ul>
+            </div>
+
+            <div style="margin-bottom:20px;">
+              <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px;">2. Checklist de governança para aprovação de workflows</div>
+              <ul class="checklist">
+                <li>Idempotência configurada em todos os steps de escrita</li>
+                <li>Campos sensíveis (CPF, conta, chave PIX) mascarados em logs</li>
+                <li>Timeout total do workflow dentro do SLA regulatório</li>
+                <li>Circuit breaker configurado para serviços externos</li>
+                <li>BIAN domain documentado em cada step</li>
+                <li>Teste de fallback documentado para cada step crítico</li>
+              </ul>
+            </div>
+
+            <div>
+              <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px;">3. Decisão arquitetural documentada</div>
+              <div class="card-body">Quando usar um único workflow monolítico vs. workflows compostos (workflow chamando outro workflow) para fluxos bancários complexos.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scaffold -->
+      <div class="scaffold-card">
+        <div class="scaffold-header">
+          <span class="scaffold-title">Scaffold — ponto de partida (não é solução)</span>
+          <span class="scaffold-subtitle">pix-transfer.workflow.yaml</span>
+        </div>
+        <div class="code-body" style="padding:22px 24px;">
+<pre style="font-family:'SFMono-Regular','Consolas',monospace;font-size:13px;line-height:1.65;color:var(--text);"><span class="comment"># workflows/pix-transfer.workflow.yaml</span>
+<span class="key">name</span>: pix-transfer
+<span class="key">version</span>: <span class="str">"1.0"</span>
+<span class="key">description</span>: <span class="str">"PIX Transfer — BIAN: [VOCÊ MAPEIA OS DOMÍNIOS]"</span>
+
+<span class="key">trigger</span>:
+  <span class="key">type</span>: http
+  <span class="key">method</span>: POST
+  <span class="key">path</span>: /workflows/pix-transfer
+  <span class="key">auth</span>: bearer
+
+<span class="key">input</span>:
+  <span class="key">schema</span>:
+    <span class="key">sender_account_id</span>:
+      <span class="key">type</span>: string
+      <span class="key">required</span>: <span class="kw">true</span>
+    <span class="key">receiver_pix_key</span>:
+      <span class="key">type</span>: string
+      <span class="key">required</span>: <span class="kw">true</span>
+    <span class="key">amount</span>:
+      <span class="key">type</span>: number
+      <span class="key">required</span>: <span class="kw">true</span>
+      <span class="key">minimum</span>: <span class="val-num">0.01</span>
+    <span class="key">description</span>:
+      <span class="key">type</span>: string
+      <span class="key">required</span>: <span class="kw">false</span>
+
+<span class="key">steps</span>:
+  - <span class="key">id</span>: validate-balance
+    <span class="key">name</span>: <span class="str">"[VOCÊ DEFINE]"</span>
+    <span class="key">type</span>: http
+    <span class="comment">    # ... você implementa</span>
+
+  <span class="comment">  # [CONTINUE OS DEMAIS STEPS]</span>
+
+<span class="key">output</span>:
+  <span class="key">transaction_id</span>: <span class="str">"[VOCÊ DEFINE]"</span>
+  <span class="key">status</span>: <span class="str">"[VOCÊ DEFINE]"</span>
+
+<span class="key">logging</span>:
+  <span class="key">mask_fields</span>: [sender_account_id, receiver_pix_key]  <span class="comment"># adicione os demais</span>
+  <span class="key">level</span>: info</pre>
+        </div>
+      </div>
+
+      <div class="alert alert-yellow" style="margin-bottom:10px;">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-body">
+          <div class="alert-title">Erro mais comum</div>
+          Colocar os steps de notificação (4 e 5) em sequência quando eles poderiam rodar em paralelo. Um <code>depends_on: [execute-pix]</code> em ambos, sem dependência entre si, é suficiente para paralelismo. Economia real: se cada notificação leva 500ms, paralelo economiza 500ms no SLA total.
+        </div>
+      </div>
+
+      <!-- Pontos de Atenção -->
+      <div class="subsection">
+        <div class="subsection-title">Pontos de Atenção</div>
+
+        <div class="alert alert-red">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-body">
+            <div class="alert-title">Retry sem idempotência = risco de débito duplo</div>
+            Em qualquer step que faz escrita financeira (débito, crédito, liquidação), retry sem chave de idempotência pode resultar em duplicação de operação. Toda chamada ao SPI do BACEN deve incluir <code>x-idempotency-key</code> persistente por execução, não gerado a cada tentativa.
+          </div>
+        </div>
+
+        <div class="alert alert-yellow">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-body">
+            <div class="alert-title">Timeout total ignora overhead de orquestração</div>
+            O SLA PIX de 10s inclui o tempo do Kiro processando o workflow, não apenas o tempo das APIs externas. Configure os timeouts de cada step para que a soma mais o overhead de orquestração (~200ms por step) caiba no SLA total. Regra prática: deixe 20% do SLA como margem de orquestração.
+          </div>
+        </div>
+
+        <div class="alert alert-yellow">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-body">
+            <div class="alert-title">Dados sensíveis nos logs de erro</div>
+            O campo <code>mask_fields</code> mascara dados em logs de sucesso, mas mensagens de erro geradas nos handlers podem expor CPF ou número de conta se não forem sanitizadas. Nunca inclua dados do cliente em <code>error.message</code> — use códigos de erro estruturados (<code>ERR_BALANCE_INSUFFICIENT</code>) e referencie apenas IDs internos nos logs.
+          </div>
+        </div>
+
+        <div class="alert alert-yellow">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-body">
+            <div class="alert-title">Paralelismo em steps com estado compartilhado</div>
+            Steps que rodam em paralelo não devem escrever no mesmo recurso sem controle de concorrência. Notificações paralelas ao remetente e destinatário são seguras porque escrevem em filas distintas. Passos paralelos que atualizam o mesmo registro de conta precisam de lock explícito ou serialização.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── REFERÊNCIA RÁPIDA ─────────────────────────────────── -->
+    <section class="section" id="referencia">
+      <div class="section-label">Referência</div>
+      <h2 class="section-title">Resumo por nível</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nível</th>
+              <th>Foco</th>
+              <th>Tempo Estimado</th>
+              <th>Critérios Extras</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-gray">E1</span></td>
+              <td>Executar e entender o workflow scaffold</td>
+              <td><strong>~4h</strong></td>
+              <td>Apenas base</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-yellow">E2</span></td>
+              <td>Implementar error handling + retry com idempotência</td>
+              <td><strong>~3h</strong></td>
+              <td>+ Fallback + Idempotência</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-purple">E3</span></td>
+              <td>LGPD compliance + BIAN mapping + template</td>
+              <td><strong>~2h</strong></td>
+              <td>+ Mascaramento + Mapeamento + Template</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-cyan">E4</span></td>
+              <td>Framework de governança para o time</td>
+              <td><strong>~2h</strong></td>
+              <td>+ Checklist + Padrões + Decisão arquitetural</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ─── PRÓXIMOS PASSOS ───────────────────────────────────── -->
+    <section class="section" id="proximos">
+      <div class="section-label">Próximos Passos</div>
+      <h2 class="section-title">O que vem depois</h2>
+
+      <div class="card-grid">
+        <div class="next-card purple">
+          <div class="next-card-num">LAB 03</div>
+          <div class="next-card-title">Automated Code Review</div>
+          <div class="next-card-desc">
+            (E2/E3) — Integrar revisão automática de segurança e compliance no pipeline de PR, usando os padrões que você definiu no LAB 02 como critérios de revisão.
+          </div>
+        </div>
+        <div class="next-card cyan">
+          <div class="next-card-num">LAB 04</div>
+          <div class="next-card-title">Observability &amp; SLA Monitoring</div>
+          <div class="next-card-desc">
+            (E3/E4) — Instrumentar os workflows Kiro com métricas, alertas e dashboards para monitoramento de SLA em produção bancária.
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px;border-color:rgba(168,85,247,.2);background:rgba(168,85,247,.03);">
+        <div class="card-label" style="color:var(--purple);margin-bottom:8px;">Fase 2 — Amplify</div>
+        <div class="card-body">
+          (E3/E4) — Escalar os workflows Kiro para o time inteiro, integrando com CI/CD e incorporando aprovações humanas em operações de alto risco via checkpoints Kiro.
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /page -->
+
+  <!-- ─── BOTTOM NAV ────────────────────────────────────────────── -->
+  <nav class="lab-nav-bottom">
+    <a href="lab-01.html" class="lab-nav-prev">← LAB 01: Devin</a>
+    <div class="lab-nav-info">LAB 02 de 8 · Trilha Kiro</div>
+    <a href="index.html" class="lab-nav-next">Ver todos os Labs →</a>
+  </nav>
+
+  <!-- ─── SCRIPTS ──────────────────────────────────────────────── -->
+  <script>
+    // ── Hamburger ──────────────────────────────────────────────
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    // ── Generic tab switcher ────────────────────────────────────
+    function initTabs(tabsId) {
+      const container = document.getElementById(tabsId);
+      if (!container) return;
+      container.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.dataset.target;
+          // deactivate all tabs + panels in same tabs-wrap
+          const wrap = container.closest('.tabs-wrap');
+          wrap.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          wrap.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+          // activate clicked
+          tab.classList.add('active');
+          const panel = document.getElementById(target);
+          if (panel) panel.classList.add('active');
+        });
+      });
+    }
+
+    initTabs('objTabs');
+    initTabs('exTabs');
+
+    // ── Smooth scroll for anchor links ──────────────────────────
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const id = a.getAttribute('href').slice(1);
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  </script>
+</body>
+</html>

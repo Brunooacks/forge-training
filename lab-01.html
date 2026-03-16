@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FORGE Engineering — LAB 01: First Deploy with Devin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #03050f;
+      --bg-2:       #090d1f;
+      --bg-3:       #0f1428;
+      --bg-4:       #141930;
+      --cyan:       #00c8ff;
+      --cyan-dim:   #00c8ff22;
+      --cyan-glow:  #00c8ff44;
+      --text:       #e8eaf6;
+      --text-dim:   #8892aa;
+      --text-muted: #4d5570;
+      --border:     #1e2540;
+      --border-bright: #2a3560;
+      --green:      #00e5a0;
+      --yellow:     #ffc94d;
+      --red:        #ff5c7a;
+      --purple:     #a855f7;
+      --font-head:  'Syne', sans-serif;
+      --font-body:  'DM Sans', sans-serif;
+      --radius:     12px;
+      --radius-sm:  8px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ── Nav ───────────────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(3, 5, 15, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      gap: 24px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .nav-logo {
+      font-family: var(--font-head);
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text);
+    }
+
+    .nav-logo span { color: var(--cyan); }
+
+    .nav-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--cyan);
+      background: var(--cyan-dim);
+      border: 1px solid var(--cyan-glow);
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-dim);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      background: var(--bg-3);
+    }
+
+    .nav-cta {
+      background: var(--cyan) !important;
+      color: var(--bg) !important;
+      font-weight: 600 !important;
+      padding: 6px 16px !important;
+    }
+
+    .nav-cta:hover {
+      background: #33d4ff !important;
+    }
+
+    .nav-back {
+      color: var(--text-muted) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: var(--radius-sm) !important;
+    }
+
+    .nav-back:hover {
+      color: var(--text-dim) !important;
+      border-color: var(--border-bright) !important;
+    }
+
+    /* ── Hamburger ─────────────────────────────────────────────── */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 8px;
+      background: none;
+      border: none;
+    }
+
+    .nav-hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      transition: all 0.3s;
+      border-radius: 2px;
+    }
+
+    .nav-mobile-menu {
+      display: none;
+      position: absolute;
+      top: 60px;
+      left: 0;
+      right: 0;
+      background: var(--bg-2);
+      border-bottom: 1px solid var(--border);
+      padding: 16px;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 99;
+    }
+
+    .nav-mobile-menu.open { display: flex; }
+
+    .nav-mobile-menu a {
+      text-decoration: none;
+      color: var(--text-dim);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .nav-mobile-menu a:hover {
+      color: var(--text);
+      background: var(--bg-3);
+    }
+
+    .nav-mobile-menu .nav-cta {
+      background: var(--cyan) !important;
+      color: var(--bg) !important;
+      text-align: center;
+    }
+
+    /* ── Layout ────────────────────────────────────────────────── */
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px 80px;
+    }
+
+    /* ── Hero ──────────────────────────────────────────────────── */
+    .hero {
+      padding: 72px 0 48px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-phase {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-3);
+      border: 1px solid var(--border-bright);
+      border-radius: 20px;
+      padding: 4px 14px;
+      margin-bottom: 24px;
+    }
+
+    .hero-phase .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .hero-phase span {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cyan);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      font-family: var(--font-head);
+      font-size: clamp(36px, 5vw, 60px);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.08;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--cyan);
+    }
+
+    .hero-desc {
+      font-size: 17px;
+      color: var(--text-dim);
+      max-width: 640px;
+      line-height: 1.6;
+      margin-bottom: 36px;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 14px;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    .meta-chip .icon { font-size: 14px; }
+
+    /* ── Section ───────────────────────────────────────────────── */
+    .section {
+      padding: 56px 0 0;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 12px;
+    }
+
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--cyan);
+    }
+
+    .section h2 {
+      font-family: var(--font-head);
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .section-sub {
+      color: var(--text-dim);
+      margin-bottom: 32px;
+      font-size: 15px;
+    }
+
+    /* ── Cards ─────────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: border-color 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--border-bright);
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .card-grid-2 { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+    .card-grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .card-grid-4 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+
+    .card-title {
+      font-family: var(--font-head);
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .card-body {
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.65;
+    }
+
+    /* ── Score Cards ───────────────────────────────────────────── */
+    .score-big {
+      font-family: var(--font-head);
+      font-size: 52px;
+      font-weight: 800;
+      letter-spacing: -2px;
+      color: var(--cyan);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .score-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--bg-4);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--cyan), #33d4ff);
+      transition: width 1s ease;
+    }
+
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .progress-row strong { color: var(--text-dim); }
+
+    /* ── Badge ─────────────────────────────────────────────────── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .badge-cyan  { background: var(--cyan-dim); color: var(--cyan); border: 1px solid var(--cyan-glow); }
+    .badge-green { background: #00e5a015; color: var(--green); border: 1px solid #00e5a030; }
+    .badge-yellow{ background: #ffc94d15; color: var(--yellow); border: 1px solid #ffc94d30; }
+    .badge-red   { background: #ff5c7a15; color: var(--red); border: 1px solid #ff5c7a30; }
+    .badge-purple{ background: #a855f715; color: var(--purple); border: 1px solid #a855f730; }
+    .badge-gray  { background: var(--bg-4); color: var(--text-muted); border: 1px solid var(--border); }
+
+    /* ── Level Tabs ─────────────────────────────────────────────── */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 4px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      flex: 1;
+      min-width: 100px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--text-dim);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .tab.active {
+      background: var(--bg-4);
+      color: var(--cyan);
+      border: 1px solid var(--border-bright);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── Table ─────────────────────────────────────────────────── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    thead {
+      background: var(--bg-3);
+    }
+
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-family: var(--font-head);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 12px 16px;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tr:hover td { background: var(--bg-3); }
+
+    /* ── Code Block ─────────────────────────────────────────────── */
+    .code-block {
+      background: #070b1a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 16px 0;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--bg-3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-lang {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .code-file {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: 'Courier New', monospace;
+    }
+
+    pre {
+      padding: 20px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.65;
+      color: #c9d1e9;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+    }
+
+    /* ── Prompt Template ─────────────────────────────────────────── */
+    .prompt-block {
+      background: #070b1a;
+      border: 1px solid var(--cyan-glow);
+      border-radius: var(--radius);
+      padding: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #c9d1e9;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .prompt-var { color: var(--cyan); }
+    .prompt-comment { color: var(--text-muted); font-style: italic; }
+
+    /* ── Alert ─────────────────────────────────────────────────── */
+    .alert {
+      display: flex;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      margin: 12px 0;
+      font-size: 14px;
+    }
+
+    .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+    .alert-yellow { background: #ffc94d10; border: 1px solid #ffc94d30; color: #e8c97a; }
+    .alert-red    { background: #ff5c7a10; border: 1px solid #ff5c7a30; color: #e87a8a; }
+    .alert-green  { background: #00e5a010; border: 1px solid #00e5a030; color: #7ae0c9; }
+    .alert-cyan   { background: var(--cyan-dim); border: 1px solid var(--cyan-glow); color: #7ad4e8; }
+
+    /* ── Checklist ─────────────────────────────────────────────── */
+    .checklist {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+
+    .checklist li::before {
+      content: '☐';
+      color: var(--border-bright);
+      font-size: 15px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── Loop Visual ─────────────────────────────────────────────── */
+    .loop-steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      margin: 20px 0;
+    }
+
+    .loop-step {
+      flex: 1;
+      min-width: 140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 20px 12px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    .loop-step:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+    .loop-step:last-child  { border-radius: 0 var(--radius) var(--radius) 0; }
+    .loop-step + .loop-step { border-left: none; }
+
+    .loop-step.highlight { background: var(--cyan-dim); border-color: var(--cyan-glow); }
+
+    .loop-num {
+      font-family: var(--font-head);
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--cyan);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .loop-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .loop-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── Catalog Card ─────────────────────────────────────────────── */
+    .catalog-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: border-color 0.2s, transform 0.2s;
+      cursor: default;
+    }
+
+    .catalog-card:hover {
+      border-color: var(--cyan-glow);
+      transform: translateY(-2px);
+    }
+
+    .catalog-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .catalog-card-title {
+      font-family: var(--font-head);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .catalog-card-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .catalog-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* ── Recommendation ─────────────────────────────────────────── */
+    .rec {
+      display: flex;
+      gap: 14px;
+      padding: 18px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+    }
+
+    .rec-priority {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .rec-priority.high   { background: #ff5c7a20; border: 1px solid #ff5c7a40; color: var(--red); }
+    .rec-priority.medium { background: #ffc94d20; border: 1px solid #ffc94d40; color: var(--yellow); }
+    .rec-priority.low    { background: #00e5a020; border: 1px solid #00e5a040; color: var(--green); }
+
+    .rec-content { flex: 1; }
+    .rec-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .rec-body  { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+    .rec-impact { font-size: 12px; color: var(--cyan); margin-top: 8px; }
+
+    /* ── Footer ─────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 32px;
+      margin-top: 80px;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-brand {
+      font-family: var(--font-head);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .footer-brand span { color: var(--cyan); }
+
+    .footer-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ── Util ───────────────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 40px 0;
+    }
+
+    .mt-8  { margin-top: 8px; }
+    .mt-16 { margin-top: 16px; }
+    .mt-24 { margin-top: 24px; }
+    .mt-32 { margin-top: 32px; }
+    .mb-8  { margin-bottom: 8px; }
+    .mb-16 { margin-bottom: 16px; }
+    .mb-24 { margin-bottom: 24px; }
+    .flex  { display: flex; }
+    .items-center { align-items: center; }
+    .gap-8 { gap: 8px; }
+    .gap-12{ gap: 12px; }
+    .text-cyan   { color: var(--cyan); }
+    .text-green  { color: var(--green); }
+    .text-yellow { color: var(--yellow); }
+    .text-red    { color: var(--red); }
+    .text-dim    { color: var(--text-dim); }
+    .text-muted  { color: var(--text-muted); }
+    .text-sm     { font-size: 13px; }
+    .text-xs     { font-size: 12px; }
+    .font-head   { font-family: var(--font-head); }
+    .font-bold   { font-weight: 700; }
+
+    strong { color: var(--text); font-weight: 600; }
+
+    /* ── Breadcrumb ─────────────────────────────────────────────── */
+    .breadcrumb { background: var(--bg-2); border-bottom: 1px solid var(--border); }
+    .breadcrumb-link { color: var(--text-dim); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+    .breadcrumb-link:hover { color: var(--cyan); }
+    .breadcrumb-sep { color: var(--text-muted); margin: 0 8px; font-size: 13px; }
+    .breadcrumb-current { color: var(--text-dim); font-size: 13px; }
+
+    /* ── Bottom Nav ─────────────────────────────────────────────── */
+    .lab-nav-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(9, 13, 31, 0.95);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 32px;
+      z-index: 100;
+    }
+
+    .lab-nav-bottom a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .lab-nav-bottom a:hover { color: var(--text); border-color: var(--border-bright); }
+    .lab-nav-next { color: var(--cyan) !important; border-color: var(--cyan-glow) !important; }
+    .lab-nav-next:hover { background: var(--cyan-dim) !important; }
+    .lab-nav-info { font-size: 12px; color: var(--text-muted); }
+
+    /* ── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .hero { padding: 40px 0 32px; }
+      .hero h1 { font-size: clamp(28px, 7vw, 40px); }
+      .page { padding: 0 16px 60px; }
+      .card-grid-2, .card-grid-3, .card-grid-4 { grid-template-columns: 1fr; }
+      .loop-steps { flex-direction: column; }
+      .loop-step { border-radius: 0 !important; border-left: 1px solid var(--border) !important; border-top: none !important; }
+      .loop-step:first-child { border-radius: var(--radius) var(--radius) 0 0 !important; border-top: 1px solid var(--border) !important; }
+      .loop-step:last-child  { border-radius: 0 0 var(--radius) var(--radius) !important; }
+      .table-wrap { font-size: 13px; }
+      .hero-meta { gap: 8px; }
+      .meta-chip { font-size: 12px; padding: 4px 10px; }
+      .tabs { flex-wrap: wrap; }
+      .tab { min-width: 80px; font-size: 12px; padding: 6px 10px; }
+      .score-big { font-size: 36px; }
+    }
+
+    @media (max-width: 480px) {
+      nav { padding: 0 16px; }
+      .hero h1 { font-size: 26px; }
+      .section h2 { font-size: 22px; }
+      .code-block pre { font-size: 12px; }
+      .card { padding: 20px; }
+      .lab-nav-bottom { padding: 10px 16px; }
+      .lab-nav-info { display: none; }
+      .lab-nav-bottom a { font-size: 12px; padding: 5px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════ NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-logo">FOR<span>GE</span></div>
+      <div class="nav-badge">Engineering Program</div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-back">← Labs</a></li>
+      <li><a href="#contexto">Contexto</a></li>
+      <li><a href="#conceitos">Conceitos</a></li>
+      <li><a href="#demo">Demo</a></li>
+      <li><a href="#exercicio">Exercício</a></li>
+      <li><a href="#catalogo">Catálogo</a></li>
+      <li><a href="#qualidade">Qualidade</a></li>
+      <li><a href="#exercicio" class="nav-cta">Começar Lab</a></li>
+    </ul>
+    <button class="nav-hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+  <div class="nav-mobile-menu" id="mobileMenu">
+    <a href="index.html">← Todos os Labs</a>
+    <a href="#contexto" onclick="closeMobileMenu()">Contexto</a>
+    <a href="#conceitos" onclick="closeMobileMenu()">Conceitos</a>
+    <a href="#demo" onclick="closeMobileMenu()">Demo</a>
+    <a href="#exercicio" onclick="closeMobileMenu()">Exercício</a>
+    <a href="#catalogo" onclick="closeMobileMenu()">Catálogo</a>
+    <a href="#qualidade" onclick="closeMobileMenu()">Qualidade</a>
+    <a href="#exercicio" class="nav-cta" onclick="closeMobileMenu()">Começar Lab</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════ BREADCRUMB -->
+<div class="breadcrumb">
+  <div class="page" style="padding-top:16px;padding-bottom:0">
+    <a href="index.html" class="breadcrumb-link">← Todos os Labs</a>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-current">LAB 01 · First Deploy with Devin</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ HERO -->
+<div class="page">
+  <section class="hero">
+    <div class="hero-phase">
+      <div class="dot"></div>
+      <span>Fase 1 — Foundation · Semanas 1–2</span>
+    </div>
+    <h1>LAB 01 — <em>First Deploy</em><br>with Devin</h1>
+    <p class="hero-desc">
+      Seu primeiro deploy supervisionado com um agente autônomo de software. Entenda como estruturar tarefas, revisar planos de execução, e quando — e quando não — delegar com autonomia em ambiente bancário.
+    </p>
+    <div class="hero-meta">
+      <span class="meta-chip"><span class="icon">🤖</span> Devin AI</span>
+      <span class="meta-chip"><span class="icon">⏱</span> 2h (E4) a 4h (E1)</span>
+      <span class="meta-chip"><span class="icon">🏦</span> Contexto bancário</span>
+      <span class="meta-chip"><span class="icon">🎯</span> E1 · E2 · E3 · E4</span>
+      <span class="meta-chip"><span class="icon">📊</span> Score: 81.2 · Efetividade: 79/100</span>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ OBJETIVOS POR NÍVEL -->
+  <section class="section" id="objetivos">
+    <div class="section-label">Objetivos</div>
+    <h2>Ao final deste lab, você vai...</h2>
+    <p class="section-sub">Objetivos mapeados por nível de senioridade usando Taxonomia de Bloom</p>
+
+    <div class="tabs" id="level-tabs">
+      <button class="tab active" onclick="switchTab('e1')">E1 — Junior</button>
+      <button class="tab" onclick="switchTab('e2')">E2 — Mid</button>
+      <button class="tab" onclick="switchTab('e3')">E3 — Senior</button>
+      <button class="tab" onclick="switchTab('e4')">E4 — Staff</button>
+    </div>
+
+    <div id="tab-e1" class="tab-content active">
+      <div class="card-grid card-grid-3">
+        <div class="card">
+          <div class="flex items-center gap-8 mb-16">
+            <span class="badge badge-cyan">Lembrar</span>
+          </div>
+          <div class="card-title">Identificar componentes de prompt eficaz</div>
+          <div class="card-body">Reconhecer os três elementos de um prompt eficaz para o Devin: <strong>contexto</strong>, <strong>tarefa</strong> e <strong>critérios de aceitação</strong>.</div>
+        </div>
+        <div class="card">
+          <div class="flex items-center gap-8 mb-16">
+            <span class="badge badge-green">Aplicar</span>
+          </div>
+          <div class="card-title">Executar sessão supervisionada ao deploy</div>
+          <div class="card-body">Completar uma sessão do primeiro prompt ao deploy de um endpoint simples, revisando cada etapa do plano do Devin.</div>
+        </div>
+        <div class="card">
+          <div class="flex items-center gap-8 mb-16">
+            <span class="badge badge-yellow">Compreender</span>
+          </div>
+          <div class="card-title">Distinguir quando revisar vs. autonomia</div>
+          <div class="card-body">Identificar os passos críticos que exigem revisão humana (plano inicial) vs. os que podem executar automaticamente.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-e2" class="tab-content">
+      <div class="card-grid card-grid-3">
+        <div class="card">
+          <div class="flex items-center gap-8 mb-16">
+            <span class="badge badge-green">Aplicar</span>
+          </div>
+          <div class="card-title">Implementar feature completa em &lt;2h</div>
+          <div class="card-body">Delegar endpoint + testes + documentação ao Devin em uma única sessão com critérios de aceitação claros.</div>
+        </div>
+        <div class="card">
+          <div class="flex items-center gap-8 mb-16">
+            <span class="badge badge-purple">Analisar</span>
+          </div>
+          <div class="card-title">Analisar plano e identificar riscos</div>
+          <div class="card-body">Ler o plano de execução do Devin e identificar dependências incorretas, steps faltantes, ou riscos de compliance antes de aprovar.</div>
+        </div>
+        <div class="card">
+          <div class="flex items-center gap-8 mb-16">
+            <span class="badge badge-purple">Analisar</span>
+          </div>
+          <div class="card-title">Comparar Devin vs. desenvolvimento manual</div>
+          <div class="card-body">Avaliar concretamente ganhos de velocidade e trade-offs de qualidade para decisões futuras de delegação.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-e3" class="tab-content">
+      <div class="card-grid card-grid-3">
+        <div class="card">
+          <div class="flex items-center gap-8 mb-16">
+            <span class="badge badge-red">Avaliar</span>
+          </div>
+          <div class="card-title">Avaliar quando delegar vs. manter controle</div>
+          <div class="card-body">Decisão baseada em risco técnico, contexto regulatório (LGPD, BACEN) e criticidade da operação bancária.</div>
+        </div>
+        <div class="card">
+          <div class="flex items-center gap-8 mb-16">
+            <span class="badge badge-cyan">Criar</span>
+          </div>
+          <div class="card-title">Criar templates de prompt reutilizáveis</div>
+          <div class="card-body">Produzir templates com critérios de qualidade bancária embutidos que o time inteiro pode usar diretamente.</div>
+        </div>
+        <div class="card">
+          <div class="flex items-center gap-8 mb-16">
+            <span class="badge badge-purple">Analisar</span>
+          </div>
+          <div class="card-title">Trade-offs em ambiente regulado</div>
+          <div class="card-body">Analisar qualidade e auditabilidade do código gerado por agente em contexto de compliance financeiro.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-e4" class="tab-content">
+      <div class="card-grid card-grid-3">
+        <div class="card">
+          <div class="flex items-center gap-8 mb-16">
+            <span class="badge badge-cyan">Criar</span>
+          </div>
+          <div class="card-title">Definir padrões de uso para o time</div>
+          <div class="card-body">Criar playbook de delegação com critérios de revisão e checklist de PR para código gerado por agente.</div>
+        </div>
+        <div class="card">
+          <div class="flex items-center gap-8 mb-16">
+            <span class="badge badge-red">Avaliar</span>
+          </div>
+          <div class="card-title">Riscos organizacionais de adoção</div>
+          <div class="card-body">Mapear riscos de adoção de agentes autônomos em banco: qualidade, segurança, compliance, dependência de vendor.</div>
+        </div>
+        <div class="card">
+          <div class="flex items-center gap-8 mb-16">
+            <span class="badge badge-cyan">Criar</span>
+          </div>
+          <div class="card-title">Framework de onboarding em escala</div>
+          <div class="card-body">Projetar como 50+ engenheiros do banco vão adotar o Devin com segurança e consistência.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ CONTEXTO -->
+  <section class="section" id="contexto">
+    <div class="section-label">Contexto</div>
+    <h2>Por que o Devin muda o jogo no banco</h2>
+    <p class="section-sub">30–40% do tempo de um engenheiro em banco vai para tarefas mecânicas. O Devin assume isso.</p>
+
+    <div class="card-grid card-grid-2">
+      <div class="card">
+        <div class="card-title">O problema do dia a dia</div>
+        <div class="card-body">
+          Criar boilerplate, escrever testes repetitivos, gerar documentação, criar Dockerfiles — tarefas necessárias mas que não exigem seu julgamento como engenheiro. Em um banco com centenas de microserviços, esse overhead se multiplica.
+          <div class="mt-16">
+            O Devin é o agente que assume essas tarefas, liberando você para focar no que exige julgamento real: <strong>arquitetura, decisões de negócio, e revisão de código crítico</strong>.
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">O modelo mental correto</div>
+        <div class="card-body">
+          Trate o Devin como um <strong>dev júnior extremamente competente e disponível 24h</strong>. Você passa a tarefa com clareza, ele executa e reporta. Você revisa e aprova o que importa.
+          <div class="mt-16">
+            O Devin não é um autocomplete turbinado. É um software engineer autônomo que lê sua codebase, entende o que precisa ser feito, planeja os passos, e executa — tudo em uma sessão.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ CONCEITOS -->
+  <section class="section" id="conceitos">
+    <div class="section-label">Conceitos Fundamentais</div>
+    <h2>O que você precisa saber antes de começar</h2>
+    <p class="section-sub">Vocabulário e modelo mental para trabalhar com agentes autônomos</p>
+
+    <!-- Copilot vs Devin -->
+    <div class="table-wrap mb-24">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>GitHub Copilot / Cursor</th>
+            <th>Devin</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>O que faz</strong></td>
+            <td>Completa código linha a linha</td>
+            <td class="text-cyan">Executa tarefas completas de desenvolvimento</td>
+          </tr>
+          <tr>
+            <td><strong>Quem controla o fluxo</strong></td>
+            <td>Você, o tempo todo</td>
+            <td class="text-cyan">O Devin planeja e executa; você revisa</td>
+          </tr>
+          <tr>
+            <td><strong>Quando é útil</strong></td>
+            <td>Durante a escrita de código</td>
+            <td class="text-cyan">Tarefas de 1–4h com escopo claro</td>
+          </tr>
+          <tr>
+            <td><strong>Output</strong></td>
+            <td>Sugestões de código</td>
+            <td class="text-cyan">Código + testes + documentação + deploy</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Loop de colaboração -->
+    <div class="font-head font-bold mt-24 mb-16">O loop de colaboração</div>
+    <div class="loop-steps">
+      <div class="loop-step">
+        <div class="loop-num">1</div>
+        <div class="loop-name">Prompt</div>
+        <div class="loop-desc">Você descreve a tarefa com contexto + critérios</div>
+      </div>
+      <div class="loop-step highlight">
+        <div class="loop-num">2</div>
+        <div class="loop-name">Plano</div>
+        <div class="loop-desc">Devin apresenta os passos — <strong style="color:var(--cyan)">REVISE antes de aprovar</strong></div>
+      </div>
+      <div class="loop-step">
+        <div class="loop-num">3</div>
+        <div class="loop-name">Execução</div>
+        <div class="loop-desc">Devin executa autonomamente, reportando progresso</div>
+      </div>
+      <div class="loop-step">
+        <div class="loop-num">4</div>
+        <div class="loop-name">Revisão</div>
+        <div class="loop-desc">Você verifica o resultado contra os critérios</div>
+      </div>
+      <div class="loop-step">
+        <div class="loop-num">5</div>
+        <div class="loop-name">Iteração</div>
+        <div class="loop-desc">Feedback em linguagem natural para ajustes</div>
+      </div>
+    </div>
+
+    <div class="alert alert-yellow mt-24">
+      <span class="alert-icon">⚠️</span>
+      <span>O passo 2 é onde E1s costumam errar: aprovar o plano sem ler. Para E3/E4, revisar o plano é onde você adiciona o conhecimento de contexto que o Devin não tem — restrições regulatórias, padrões do time, compliance LGPD.</span>
+    </div>
+
+    <!-- Contexto bancário -->
+    <div class="divider"></div>
+    <div class="font-head font-bold mb-16">Por que contexto bancário no prompt é obrigatório</div>
+    <p class="text-dim text-sm mb-16">O Devin não sabe que você trabalha em banco. Sem contexto explícito, ele vai produzir código correto tecnicamente mas errado para o seu ambiente:</p>
+
+    <div class="card-grid card-grid-3">
+      <div class="alert alert-red">
+        <span class="alert-icon">❌</span>
+        <span>CPF aparece em logs de erro → violação <strong>LGPD</strong></span>
+      </div>
+      <div class="alert alert-red">
+        <span class="alert-icon">❌</span>
+        <span>Timeout de 30s em webhook → viola <strong>SLA do banco</strong></span>
+      </div>
+      <div class="alert alert-red">
+        <span class="alert-icon">❌</span>
+        <span>Sem audit log em operações financeiras → violação <strong>BACEN</strong></span>
+      </div>
+    </div>
+
+    <div class="alert alert-green mt-16">
+      <span class="alert-icon">✅</span>
+      <span>Sempre inclua no prompt: <code style="background:var(--bg-4);padding:2px 6px;border-radius:4px;font-size:12px">"Este serviço processa [tipo de dado] para [tipo de operação]. Requisitos: [compliance, SLA, segurança]"</code></span>
+    </div>
+
+    <!-- Vocabulário -->
+    <div class="divider"></div>
+    <div class="font-head font-bold mb-16">Vocabulário essencial</div>
+    <div class="card-grid card-grid-2">
+      <div class="card"><div class="card-title">Agente autônomo</div><div class="card-body">Software que percebe o ambiente, planeja e executa ações de forma independente para atingir um objetivo — sem intervenção passo a passo do usuário.</div></div>
+      <div class="card"><div class="card-title">Prompt de engenharia</div><div class="card-body">Instrução técnica estruturada com contexto, tarefa específica e critérios de aceitação. A qualidade do output é diretamente proporcional à clareza do prompt.</div></div>
+      <div class="card"><div class="card-title">Tool use</div><div class="card-body">Capacidade do Devin de chamar ferramentas reais (terminal, editor de código, GitHub) durante a execução, além de apenas gerar texto.</div></div>
+      <div class="card"><div class="card-title">Context window</div><div class="card-body">Limite de informação por sessão. Tarefas muito grandes (&gt;6h equivalente) fazem o agente "perder o fio". Regra: E1–E2 máximo 2h por sessão.</div></div>
+      <div class="card"><div class="card-title">Scaffolding</div><div class="card-body">Estrutura inicial fornecida ao agente (código base, templates, configs) que delimita o escopo e melhora a qualidade do output.</div></div>
+      <div class="card"><div class="card-title">Grounding</div><div class="card-body">Ancoragem do agente em fontes de verdade verificáveis (codebase atual, docs oficiais, testes) para evitar alucinações técnicas.</div></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ DEMO -->
+  <section class="section" id="demo">
+    <div class="section-label">Demonstração Prática</div>
+    <h2>API bancária: endpoints de health &amp; status</h2>
+    <p class="section-sub">Cenário NTT: A API de autenticação do banco precisa de probes para o Kubernetes e informações operacionais para o SRE team.</p>
+
+    <!-- O prompt -->
+    <div class="font-head font-bold mb-16">O prompt (estrutura para todos os níveis)</div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Prompt</span>
+        <span class="code-file">Enviar ao Devin</span>
+      </div>
+      <pre>Contexto: API REST em Node.js/Express que faz autenticação de usuários para
+sistema bancário. O serviço roda em Kubernetes e precisa de probes de saúde.
+Compliance: dados de autenticação são sensíveis — nenhuma credencial ou token
+em logs.
+
+Tarefa: Implementar dois endpoints:
+
+1. GET /health
+   Response: { "status": "ok", "timestamp": "&lt;ISO 8601&gt;" }
+   HTTP 200 quando saudável, HTTP 503 quando não
+
+2. GET /status
+   Response: {
+     "service": "auth-api",
+     "version": "&lt;valor da ENV AUTH_API_VERSION&gt;",
+     "uptime_seconds": &lt;segundos desde startup&gt;,
+     "timestamp": "&lt;ISO 8601&gt;"
+   }
+
+Critérios de aceitação:
+- Endpoints respondem em menos de 50ms (sem dependências externas)
+- Nenhuma informação sensível na response ou nos logs
+- Testes unitários para ambos (happy path + edge cases)
+- README atualizado com documentação dos endpoints
+
+Linguagem: Node.js/Express (TypeScript) | Testes: Jest
+
+Apresente o plano de execução antes de começar. Aguarde minha aprovação.</pre>
+    </div>
+
+    <!-- O Plano -->
+    <div class="font-head font-bold mb-16 mt-24">O plano típico do Devin — o que revisar</div>
+    <div class="card-grid card-grid-2">
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">Plano</span>
+          <span class="code-file">Devin → aguarda aprovação</span>
+        </div>
+        <pre>1. Ler estrutura do projeto
+   (src/, package.json, tsconfig.json)
+
+2. Criar src/routes/health.ts
+   com implementação dos dois endpoints
+
+3. Registrar rotas no app.ts principal
+
+4. Criar __tests__/health.test.ts
+   com testes Jest + supertest
+
+5. Atualizar README.md com documentação
+   dos endpoints
+
+6. Executar npm test
+
+7. Confirmar que endpoints respondem
+   conforme especificado
+
+Tempo estimado: 45 minutos</pre>
+      </div>
+      <div class="card">
+        <div class="card-title text-yellow">⚠️ O que revisar antes de aprovar</div>
+        <div class="card-body">
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:12px">
+            <li><strong>Passo 1</strong>: Está lendo o tsconfig? TypeScript precisa de configuração correta para compilar.</li>
+            <li><strong>Passo 2</strong>: O /health tem alguma dependência externa (banco, cache)? Se sim, remova — vai tornar o probe lento e instável.</li>
+            <li><strong>Passos 4–5</strong>: Testes e docs estão no plano? Se não estiver aqui, não vai aparecer no output.</li>
+            <li><strong>E3/E4</strong>: O plano menciona verificação de dados sensíveis no response? Se não, adicione como critério explícito no feedback ao plano.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- O código gerado -->
+    <div class="font-head font-bold mb-16 mt-24">O resultado (código gerado pelo Devin)</div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">TypeScript</span>
+        <span class="code-file">src/routes/health.ts</span>
+      </div>
+      <pre><span style="color:#6272a4">// GET /health — Kubernetes readiness/liveness probe</span>
+<span style="color:#6272a4">// Por quê: retorna apenas status e timestamp, sem dependências externas</span>
+<span style="color:#6272a4">// Qualquer adição de lógica complexa aqui aumenta o risco de falsa negativa</span>
+<span style="color:#ff79c6">import</span> { Router, Request, Response } <span style="color:#ff79c6">from</span> <span style="color:#f1fa8c">'express'</span>;
+
+<span style="color:#ff79c6">const</span> router = <span style="color:#50fa7b">Router</span>();
+<span style="color:#ff79c6">const</span> startupTime = <span style="color:#bd93f9">Date</span>.<span style="color:#50fa7b">now</span>();
+
+router.<span style="color:#50fa7b">get</span>(<span style="color:#f1fa8c">'/health'</span>, (_req: Request, res: Response) =&gt; {
+  res.<span style="color:#50fa7b">status</span>(<span style="color:#bd93f9">200</span>).<span style="color:#50fa7b">json</span>({
+    status: <span style="color:#f1fa8c">'ok'</span>,
+    timestamp: <span style="color:#ff79c6">new</span> <span style="color:#bd93f9">Date</span>().<span style="color:#50fa7b">toISOString</span>()
+  });
+});
+
+<span style="color:#6272a4">// GET /status — Informações operacionais para SRE</span>
+<span style="color:#6272a4">// Por quê: uptime calculado localmente, versão via ENV (nunca hardcoded)</span>
+<span style="color:#6272a4">// Sem dados de usuário, sem credenciais — compliance seguro</span>
+router.<span style="color:#50fa7b">get</span>(<span style="color:#f1fa8c">'/status'</span>, (_req: Request, res: Response) =&gt; {
+  <span style="color:#ff79c6">const</span> uptimeSeconds = <span style="color:#bd93f9">Math</span>.<span style="color:#50fa7b">floor</span>((<span style="color:#bd93f9">Date</span>.<span style="color:#50fa7b">now</span>() - startupTime) / <span style="color:#bd93f9">1000</span>);
+  res.<span style="color:#50fa7b">status</span>(<span style="color:#bd93f9">200</span>).<span style="color:#50fa7b">json</span>({
+    service: <span style="color:#f1fa8c">'auth-api'</span>,
+    version: process.env.AUTH_API_VERSION || <span style="color:#f1fa8c">'unknown'</span>,
+    uptime_seconds: uptimeSeconds,
+    timestamp: <span style="color:#ff79c6">new</span> <span style="color:#bd93f9">Date</span>().<span style="color:#50fa7b">toISOString</span>()
+  });
+});
+
+<span style="color:#ff79c6">export default</span> router;</pre>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ EXERCÍCIO -->
+  <section class="section" id="exercicio">
+    <div class="section-label">Exercício</div>
+    <h2>Sua vez — endpoint <code style="font-size:22px;background:var(--bg-3);padding:2px 8px;border-radius:6px;color:var(--cyan)">/version</code></h2>
+    <p class="section-sub">Cenário NTT: O time de SRE precisa rastrear qual versão de cada serviço está em produção para correlacionar com incidents.</p>
+
+    <!-- Tarefa base -->
+    <div class="card mb-24">
+      <div class="card-title">Tarefa base (E1–E2–E3–E4)</div>
+      <div class="card-body mb-16">
+        Usar o Devin para implementar <code style="background:var(--bg-4);padding:2px 6px;border-radius:4px;color:var(--cyan)">GET /version</code> que retorna:
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">JSON</span><span class="code-file">Response esperado</span></div>
+        <pre>{
+  <span style="color:#f1fa8c">"version"</span>: <span style="color:#50fa7b">"1.2.3"</span>,       <span style="color:#6272a4">// de APP_VERSION</span>
+  <span style="color:#f1fa8c">"build_date"</span>: <span style="color:#50fa7b">"2026-03-15T10:00:00Z"</span>,  <span style="color:#6272a4">// de BUILD_DATE</span>
+  <span style="color:#f1fa8c">"git_commit"</span>: <span style="color:#50fa7b">"a1b2c3d"</span>   <span style="color:#6272a4">// de GIT_COMMIT</span>
+}</pre>
+      </div>
+    </div>
+
+    <!-- Níveis -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchExTab('ex-e1')">E1 — Base</button>
+      <button class="tab" onclick="switchExTab('ex-e2')">E2 — + Docs</button>
+      <button class="tab" onclick="switchExTab('ex-e3')">E3 — + Security</button>
+      <button class="tab" onclick="switchExTab('ex-e4')">E4 — + Padrões</button>
+    </div>
+
+    <div id="tab-ex-e1" class="tab-content active">
+      <div class="card-grid card-grid-2">
+        <div class="card">
+          <div class="card-title">Critérios de Conclusão</div>
+          <ul class="checklist mt-16">
+            <li>Endpoint /version responde com JSON válido contendo os três campos</li>
+            <li>Valores lidos de variáveis de ambiente (não hardcoded)</li>
+            <li>Dockerfile atualizado com as três ENV vars e valores de exemplo</li>
+            <li>Testes passando: happy path + caso de ENV var ausente (deve retornar "unknown")</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Scaffold de Prompt (ponto de partida)</div>
+          <div class="prompt-block mt-8"><span class="prompt-comment">// Não é a solução — complete os campos em [colchetes]</span>
+
+Contexto: API REST em <span class="prompt-var">[LINGUAGEM]</span> para
+<span class="prompt-var">[TIPO_DE_SERVIÇO]</span> no banco.
+Compliance: <span class="prompt-var">[LISTAR REQUISITOS]</span>.
+
+Tarefa: Implementar GET /version que retorna...
+<span class="prompt-var">[VOCÊ COMPLETA DAQUI]</span>
+
+Critérios de aceitação:
+<span class="prompt-var">[VOCÊ DEFINE COM BASE NOS CRITÉRIOS ACIMA]</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-ex-e2" class="tab-content">
+      <div class="card-grid card-grid-2">
+        <div class="card">
+          <div class="card-title">Critérios de Conclusão — E2</div>
+          <ul class="checklist mt-16">
+            <li>Todos os critérios base (E1)</li>
+            <li>README atualizado com: descrição do endpoint, ENV vars necessárias, exemplo de curl</li>
+          </ul>
+          <div class="alert alert-cyan mt-16">
+            <span class="alert-icon">💡</span>
+            <span>No prompt, inclua: "Atualizar o README com uma seção de Configuração listando as ENV vars e um exemplo de request com curl."</span>
+          </div>
+          <div class="alert alert-yellow mt-8">
+            <span class="alert-icon">⏱</span>
+            <span>Se ultrapassar 2h, identifique onde travou — isso é tão valioso quanto completar no tempo.</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Dica para análise de plano</div>
+          <div class="card-body">Para E2, o valor não é só completar — é <strong>analisar o plano do Devin antes de aprovar</strong>. Perguntas para fazer ao plano:<br><br>
+            <ul style="list-style:disc;padding-left:20px;color:var(--text-dim);font-size:13px;display:flex;flex-direction:column;gap:6px">
+              <li>O Devin vai ler todos os arquivos relevantes?</li>
+              <li>Os testes cobrem o caso de ENV var ausente?</li>
+              <li>O README vai ser atualizado (está no plano)?</li>
+              <li>Há algum step que pode gerar dado sensível?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-ex-e3" class="tab-content">
+      <div class="card-grid card-grid-2">
+        <div class="card">
+          <div class="card-title">Critérios de Conclusão — E3</div>
+          <ul class="checklist mt-16">
+            <li>Todos os critérios base + E2</li>
+            <li>Nenhuma informação sensível pode aparecer no response ou nos logs</li>
+            <li>O prompt instrui o Devin a incluir comentário no código explicando por que cada campo é seguro para expor publicamente</li>
+          </ul>
+          <div class="alert alert-cyan mt-16">
+            <span class="alert-icon">🎯</span>
+            <span><strong>Desafio adicional</strong>: Crie um template de prompt genérico para "adicionar endpoint de status operacional em qualquer microserviço NTT", reutilizável pelo time.</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Para E3: trade-offs a avaliar</div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:12px">
+            <div><strong>Auditabilidade</strong>: Código gerado por agente precisa ter o mesmo nível de comentários e rastreabilidade que código escrito manualmente?</div>
+            <div><strong>Responsabilidade</strong>: Quem assina o PR gerado pelo Devin? O engenheiro que aprovou o plano tem responsabilidade total pelo código.</div>
+            <div><strong>Compliance</strong>: Em ambientes com BACEN Resolução 4.658, código de sistemas críticos precisa de documentação de origem. Como documentar "gerado por Devin"?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-ex-e4" class="tab-content">
+      <div class="card">
+        <div class="card-title">Desafio E4 — Criar padrões para o time</div>
+        <div class="card-body mb-24">Além de implementar o endpoint, produza os três artefatos que o time vai usar em todos os futuros labs:</div>
+        <div class="card-grid card-grid-3">
+          <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px">
+            <div class="font-head font-bold mb-8" style="font-size:14px">1. Template de Prompt</div>
+            <div class="text-sm text-dim">Template com slots preenchíveis para qualquer serviço bancário. O time usa diretamente sem precisar reinventar a estrutura.</div>
+          </div>
+          <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px">
+            <div class="font-head font-bold mb-8" style="font-size:14px">2. Checklist de Revisão</div>
+            <div class="text-sm text-dim">Checklist de code review para código gerado por agente em ambientes regulados (LGPD, BACEN, PCI-DSS).</div>
+          </div>
+          <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px">
+            <div class="font-head font-bold mb-8" style="font-size:14px">3. Decisão Documentada</div>
+            <div class="text-sm text-dim">Quando usar Devin vs. desenvolver manualmente — critérios objetivos para o time tomar decisões consistentes.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pontos de atenção -->
+    <div class="divider"></div>
+    <div class="font-head font-bold mb-16">Erros mais comuns — não caia nestas armadilhas</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="alert alert-yellow"><span class="alert-icon">⚠️</span><span><strong>Prompt vago = output genérico</strong>: "Crie um endpoint de versão" sem contexto técnico vai gerar código que funciona mas não atende padrões do banco.</span></div>
+      <div class="alert alert-yellow"><span class="alert-icon">⚠️</span><span><strong>Editar código manualmente</strong>: Se o Devin gerar algo errado, não edite o arquivo — diga ao Devin o que está errado em linguagem natural.</span></div>
+      <div class="alert alert-yellow"><span class="alert-icon">⚠️</span><span><strong>Aprovar sem testar localmente</strong>: Sempre rodar <code style="background:var(--bg-4);padding:1px 5px;border-radius:3px">npm test</code> e testar o endpoint com curl antes de fazer merge.</span></div>
+      <div class="alert alert-yellow"><span class="alert-icon">⚠️</span><span><strong>Contexto bancário ausente</strong>: O Devin não assume LGPD, SLAs e compliance automaticamente. Sempre inclua explicitamente no prompt.</span></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ CATÁLOGO -->
+  <section class="section" id="catalogo">
+    <div class="section-label">Catálogo</div>
+    <h2>Templates de Prompts &amp; Scripts</h2>
+    <p class="section-sub">10 templates prontos para usar em engenharia de software bancária — gerados pelo Catalogador após este lab</p>
+
+    <!-- Categorias -->
+    <div class="card-grid card-grid-4 mb-24">
+      <div class="card" style="text-align:center;padding:20px 16px">
+        <div style="font-size:28px;margin-bottom:8px">🚀</div>
+        <div class="font-head font-bold mb-8" style="font-size:14px">Onboarding com Devin</div>
+        <div class="text-xs text-muted">3 templates</div>
+      </div>
+      <div class="card" style="text-align:center;padding:20px 16px">
+        <div style="font-size:28px;margin-bottom:8px">🔍</div>
+        <div class="font-head font-bold mb-8" style="font-size:14px">Qualidade de Código</div>
+        <div class="text-xs text-muted">3 templates</div>
+      </div>
+      <div class="card" style="text-align:center;padding:20px 16px">
+        <div style="font-size:28px;margin-bottom:8px">🔒</div>
+        <div class="font-head font-bold mb-8" style="font-size:14px">Segurança &amp; Compliance</div>
+        <div class="text-xs text-muted">2 templates</div>
+      </div>
+      <div class="card" style="text-align:center;padding:20px 16px">
+        <div style="font-size:28px;margin-bottom:8px">⚙️</div>
+        <div class="font-head font-bold mb-8" style="font-size:14px">DevOps &amp; Infra</div>
+        <div class="text-xs text-muted">2 templates</div>
+      </div>
+    </div>
+
+    <!-- Template destaque -->
+    <div class="font-head font-bold mb-16">Template em destaque: Primeiro Deploy com Devin</div>
+    <div class="card mb-24">
+      <div class="catalog-card-top">
+        <div>
+          <div class="catalog-card-title mb-8">Primeiro Deploy com Devin — Microserviço Bancário</div>
+          <div class="text-xs text-muted">Onboarding · Devin · v1.0 · 2026-03</div>
+        </div>
+        <div><span class="badge badge-green">✓ Validado</span></div>
+      </div>
+      <div class="catalog-card-tags mb-16">
+        <span class="badge badge-cyan">Onboarding</span>
+        <span class="badge badge-gray">E1–E2</span>
+        <span class="badge badge-gray">Devin</span>
+        <span class="badge badge-gray">Banking</span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Prompt Template</span><span class="code-file">Copiar e preencher os campos em {}</span></div>
+        <pre><span style="color:#6272a4">Contexto: Sou engenheiro em um banco brasileiro.</span>
+<span style="color:#6272a4">Primeira sessão com o Devin — tarefa de baixo risco.</span>
+
+Serviço: <span class="prompt-var">{nome_do_servico}</span> — <span class="prompt-var">{breve_descricao}</span>
+Escrito em <span class="prompt-var">{linguagem}/{framework}</span>
+Compliance: <span class="prompt-var">{ex: "nenhum dado de cliente nos logs, LGPD ativo"}</span>
+
+Tarefa: Implementar <span class="prompt-var">{descricao_da_tarefa}</span>
+
+Especificações:
+- Endpoint: <span class="prompt-var">{METHOD}</span> <span class="prompt-var">{/caminho}</span>
+- Response: <span class="prompt-var">{formato_json_esperado}</span>
+- Erro: <span class="prompt-var">{o_que_retornar_quando_falhar}</span>
+
+Critérios de aceitação:
+1. <span class="prompt-var">{criterio_verificavel_1}</span>
+2. <span class="prompt-var">{criterio_verificavel_2}</span>
+3. Testes: happy path + pelo menos 1 edge case
+4. README atualizado com documentação do endpoint
+
+Linguagem: <span class="prompt-var">{linguagem}</span> | Testes: <span class="prompt-var">{jest|pytest|junit}</span>
+
+Apresente o plano de execução antes de começar.
+Aguarde minha aprovação do plano.</pre>
+      </div>
+
+      <div class="card-grid card-grid-2 mt-24">
+        <div>
+          <div class="font-bold text-sm mb-8 text-green">✅ Quando usar</div>
+          <div class="text-sm text-dim">Primeira sessão do engenheiro com o Devin. Tarefa de baixo risco com resultado visível rápido. Ideal para LAB 01 e onboarding de novos membros do time.</div>
+        </div>
+        <div>
+          <div class="font-bold text-sm mb-8 text-red">❌ Quando NÃO usar</div>
+          <div class="text-sm text-dim">Tasks com lógica de negócio crítica (cálculo de juros, operações financeiras) — reserve para quando o engenheiro já tiver 3+ sessões de experiência com o Devin.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-grid card-grid-3">
+      <div class="catalog-card">
+        <div class="catalog-card-top">
+          <div class="catalog-card-title">Iteração com Feedback — Corrigir Output</div>
+          <span class="badge badge-cyan">Onboarding</span>
+        </div>
+        <div class="catalog-card-meta">Quando o Devin entregou algo próximo do esperado mas com problema específico. Iterar em vez de recomeçar do zero.</div>
+        <div class="catalog-card-tags">
+          <span class="badge badge-gray">Devin</span>
+          <span class="badge badge-gray">E1–E4</span>
+        </div>
+      </div>
+      <div class="catalog-card">
+        <div class="catalog-card-top">
+          <div class="catalog-card-title">LGPD Audit — Verificação de Dados Sensíveis</div>
+          <span class="badge badge-red">Security</span>
+        </div>
+        <div class="catalog-card-meta">Solicitar ao Devin uma auditoria completa de PII e dados sensíveis em código existente antes de deploy.</div>
+        <div class="catalog-card-tags">
+          <span class="badge badge-gray">Compliance</span>
+          <span class="badge badge-gray">E2–E4</span>
+        </div>
+      </div>
+      <div class="catalog-card">
+        <div class="catalog-card-top">
+          <div class="catalog-card-title">Geração de Testes — Cobertura Bancária</div>
+          <span class="badge badge-yellow">Quality</span>
+        </div>
+        <div class="catalog-card-meta">Aumentar cobertura de testes de endpoints críticos incluindo casos de compliance e edge cases bancários.</div>
+        <div class="catalog-card-tags">
+          <span class="badge badge-gray">Testing</span>
+          <span class="badge badge-gray">E2–E3</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ QUALIDADE -->
+  <section class="section" id="qualidade">
+    <div class="section-label">Relatório de Qualidade</div>
+    <h2>Scores desta produção</h2>
+    <p class="section-sub">Avaliação automática gerada pelo pipeline Revisor + Treinador após a criação do material</p>
+
+    <div class="card-grid card-grid-2">
+      <!-- Revisor -->
+      <div class="card">
+        <div class="flex items-center gap-12 mb-24">
+          <div>
+            <div class="score-big">81.2</div>
+            <div class="score-label">Score do Revisor / 100</div>
+          </div>
+          <span class="badge badge-yellow">APROVADO COM RESSALVAS</span>
+        </div>
+
+        <div>
+          <div class="progress-row"><strong>Técnica</strong><span>90/100 → 36.0 pts</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:90%"></div></div>
+
+          <div class="progress-row mt-8"><strong>Pedagógica</strong><span>83/100 → 24.9 pts</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:83%"></div></div>
+
+          <div class="progress-row mt-8"><strong>Engajamento</strong><span>80/100 → 16.0 pts</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div>
+
+          <div class="progress-row mt-8"><strong>Catálogo</strong><span>43/100 → 4.3 pts</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:43%;background:linear-gradient(90deg,var(--yellow),#ffda85)"></div></div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="text-sm text-dim">
+          <strong>Pontos fortes</strong>: TypeScript funcional sem erros de sintaxe, tabela Copilot vs. Devin como melhor onboarding de modelo mental, exercício multi-nível bem estruturado, contexto bancário (LGPD, BACEN, SLAs) em toda a extensão do material.
+        </div>
+      </div>
+
+      <!-- Treinador -->
+      <div class="card">
+        <div class="flex items-center gap-12 mb-24">
+          <div>
+            <div class="score-big">79</div>
+            <div class="score-label">Score de Efetividade / 100</div>
+          </div>
+        </div>
+
+        <div class="font-bold text-sm mb-12">Taxa de conclusão estimada</div>
+        <div>
+          <div class="progress-row"><strong>E1 sem facilitador</strong><span style="color:var(--yellow)">~50%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:50%;background:linear-gradient(90deg,var(--yellow),#ffda85)"></div></div>
+
+          <div class="progress-row mt-8"><strong>E1 com facilitador</strong><span style="color:var(--green)">~85%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div>
+
+          <div class="progress-row mt-8"><strong>E2 sem facilitador</strong><span style="color:var(--green)">~75%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div>
+
+          <div class="progress-row mt-8"><strong>E3 sem facilitador</strong><span style="color:var(--green)">~85%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div>
+
+          <div class="progress-row mt-8"><strong>E4 sem facilitador</strong><span style="color:var(--green)">~80%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="text-sm text-dim">
+          <strong>Ponto de desistência E1</strong>: Scaffold de prompt — "VOCÊ COMPLETA DAQUI" trava o perfil E1 sem experiência prévia com agentes.
+        </div>
+      </div>
+    </div>
+
+    <!-- Recomendações -->
+    <div class="font-head font-bold mb-16 mt-32">Recomendações do Treinador para próxima versão</div>
+
+    <div class="rec">
+      <div class="rec-priority high">🔴</div>
+      <div class="rec-content">
+        <div class="rec-title">Mini-checklist para E1 revisar o plano do Devin</div>
+        <div class="rec-body">Adicionar após "REVISE antes de aprovar": um box com 3 perguntas que E1 deve fazer ao analisar o plano — (a) O Devin vai ler os arquivos certos? (b) Os steps cobrem testes e docs? (c) Há algum step fora de ordem?</div>
+        <div class="rec-impact">→ Aumenta taxa de conclusão E1 de ~50% para ~70% sem facilitador</div>
+      </div>
+    </div>
+
+    <div class="rec">
+      <div class="rec-priority high">🔴</div>
+      <div class="rec-content">
+        <div class="rec-title">Resolver ambiguidade do critério de tempo para E2</div>
+        <div class="rec-body">Mudar "em menos de 2h" para "use este lab para medir quanto tempo você leva — se ultrapassar 2h, identifique o passo onde travou. Isso é tão valioso quanto completar no tempo."</div>
+        <div class="rec-impact">→ Remove barreira artificial que pode fazer E2 desistir ao ultrapassar o tempo</div>
+      </div>
+    </div>
+
+    <div class="rec">
+      <div class="rec-priority high">🔴</div>
+      <div class="rec-content">
+        <div class="rec-title">Seção de pré-requisitos para E1 (acesso ao Devin no ambiente NTT)</div>
+        <div class="rec-body">Adicionar antes do Contexto: "Antes de começar, verifique: (a) Acesso ao Devin solicitado e aprovado via TI, (b) Workspace configurado com acesso ao repositório de exercício". Sem isso, ~40% dos E1 em banco travam na configuração.</div>
+        <div class="rec-impact">→ Impacto crítico: sem acesso ao Devin, o lab é impossível de completar</div>
+      </div>
+    </div>
+
+    <div class="rec">
+      <div class="rec-priority medium">🟡</div>
+      <div class="rec-content">
+        <div class="rec-title">Versão "TL;DR" da demonstração para E3/E4</div>
+        <div class="rec-body">Adicionar uma caixa colapsável com o resumo em 5 bullets do que o Devin fez. E3/E4 já sabem TypeScript profundamente — código comentado linha a linha é mais lento do que precisam.</div>
+        <div class="rec-impact">→ Economiza ~20min para E3/E4 sem perder valor do material</div>
+      </div>
+    </div>
+
+    <div class="rec">
+      <div class="rec-priority low">🟢</div>
+      <div class="rec-content">
+        <div class="rec-title">Exemplo de comparação de prompts para E1</div>
+        <div class="rec-body">Na seção de exercício, mostrar 1 prompt ruim vs. 1 prompt bom (preenchido) para que E1 entenda concretamente o que "especificidade técnica" significa na prática.</div>
+        <div class="rec-impact">→ Nice-to-have: clareza adicional para perfil que nunca trabalhou com agentes</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ PRÓXIMOS PASSOS -->
+  <section class="section" id="proximos">
+    <div class="section-label">Próximos Passos</div>
+    <h2>Sua jornada no FORGE continua</h2>
+
+    <div class="card-grid card-grid-3">
+      <div class="card">
+        <div class="flex items-center gap-8 mb-16">
+          <span class="badge badge-gray">E1 / E2</span>
+          <span class="text-xs text-muted">Próximo</span>
+        </div>
+        <div class="card-title">LAB 02 — API Orchestration with Kiro</div>
+        <div class="card-body">A próxima ferramenta do stack FORGE — orquestrar múltiplos agentes e APIs com Kiro. Fase 1: Foundation.</div>
+      </div>
+      <div class="card">
+        <div class="flex items-center gap-8 mb-16">
+          <span class="badge badge-gray">E2 / E3</span>
+          <span class="text-xs text-muted">Em breve</span>
+        </div>
+        <div class="card-title">LAB 03 — Automated Code Review</div>
+        <div class="card-body">Integrar o Devin no workflow de PR para revisão automática de segurança e compliance bancário.</div>
+      </div>
+      <div class="card">
+        <div class="flex items-center gap-8 mb-16">
+          <span class="badge badge-cyan">E3 / E4</span>
+          <span class="text-xs text-muted">Fase 2</span>
+        </div>
+        <div class="card-title">Fase 2 — Amplify</div>
+        <div class="card-body">Escalar o uso do Devin para o time inteiro e integrar ao pipeline CI/CD com padrões organizacionais.</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════ FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">FOR<span>GE</span> Engineering · NTT DATA</div>
+    <div class="footer-meta">LAB 01 · Gerado em 2026-03-15 · Pipeline: Researcher → Planner → Writer → Reviewer → Trainer → Catalogador</div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════════ BOTTOM NAV -->
+<nav class="lab-nav-bottom">
+  <a href="index.html" class="lab-nav-prev">← Todos os Labs</a>
+  <div class="lab-nav-info">LAB 01 de 8 · Trilha Devin</div>
+  <a href="lab-02.html" class="lab-nav-next">LAB 02: Kiro →</a>
+</nav>
+
+<script>
+  function switchTab(level) {
+    // Deactivate all tabs and contents
+    document.querySelectorAll('#level-tabs .tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('[id^="tab-e"]').forEach(c => {
+      if (!c.id.startsWith('tab-ex-')) c.classList.remove('active');
+    });
+    // Activate selected
+    const tabs = document.querySelectorAll('#level-tabs .tab');
+    const order = ['e1','e2','e3','e4'];
+    tabs[order.indexOf(level)].classList.add('active');
+    document.getElementById('tab-' + level).classList.add('active');
+  }
+
+  function switchExTab(id) {
+    // Find the parent tabs container
+    const allExTabs = document.querySelectorAll('[onclick^="switchExTab"]');
+    allExTabs.forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('[id^="tab-ex-"]').forEach(c => c.classList.remove('active'));
+    // Activate
+    allExTabs.forEach(t => {
+      if (t.getAttribute('onclick') === `switchExTab('${id}')`) t.classList.add('active');
+    });
+    document.getElementById('tab-' + id).classList.add('active');
+  }
+
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('open');
+  }
+
+  function closeMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.remove('open');
+  }
+
+  // Close mobile menu when clicking outside
+  document.addEventListener('click', function(e) {
+    const nav = document.querySelector('nav');
+    const menu = document.getElementById('mobileMenu');
+    if (menu.classList.contains('open') && !nav.contains(e.target)) {
+      menu.classList.remove('open');
+    }
+  });
+</script>
+
+</body>
+</html>

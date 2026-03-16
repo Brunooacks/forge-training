@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FORGE Engineering Training Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Design Tokens ─────────────────────────────────────── */
+    :root {
+      --bg:            #03050f;
+      --bg-2:          #090d1f;
+      --bg-3:          #0f1428;
+      --bg-4:          #141930;
+      --cyan:          #00c8ff;
+      --green:         #00e5a0;
+      --yellow:        #ffc94d;
+      --red:           #ff5c7a;
+      --purple:        #a855f7;
+      --border:        #1e2540;
+      --border-bright: #2a3560;
+      --text:          #e8eaf6;
+      --text-dim:      #8892aa;
+      --text-muted:    #4d5570;
+      --radius:        12px;
+      --radius-sm:     8px;
+      --nav-h:         68px;
+      --transition:    0.22s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ─── Reset ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    img { display: block; max-width: 100%; }
+
+    /* ─── Scrollbar ──────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-2); }
+    ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 99px; }
+
+    /* ─── Layout helpers ─────────────────────────────────────── */
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px 80px;
+    }
+    .section { padding: 80px 0 0; }
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 16px;
+      height: 2px;
+      background: var(--border-bright);
+      border-radius: 99px;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(26px, 3.5vw, 40px);
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.15;
+      margin-bottom: 40px;
+    }
+
+    /* ─── NAV ────────────────────────────────────────────────── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      background: rgba(3,5,15,.7);
+      backdrop-filter: blur(18px) saturate(1.4);
+      -webkit-backdrop-filter: blur(18px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .nav-logo-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.01em;
+      color: var(--text);
+    }
+    .nav-logo-text span { color: var(--cyan); }
+    .nav-badge {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      color: var(--text-dim);
+      background: var(--bg-4);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 8px;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+    .nav-link {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-dim);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition), background var(--transition);
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+    .nav-link:hover { color: var(--text); background: var(--bg-3); }
+    .nav-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .btn-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 9px 16px;
+      min-height: 44px;
+      transition: color var(--transition), border-color var(--transition), background var(--transition);
+    }
+    .btn-github:hover { color: var(--text); border-color: var(--border-bright); background: var(--bg-4); }
+    .btn-github svg { flex-shrink: 0; }
+
+    /* hamburger */
+    .nav-hamburger {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      transition: color var(--transition), border-color var(--transition);
+      margin-left: auto;
+    }
+    .nav-hamburger:hover { color: var(--text); border-color: var(--border-bright); }
+    .nav-mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: var(--bg-2);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px 20px;
+      gap: 4px;
+    }
+    .nav-mobile-menu.open { display: flex; }
+    .nav-mobile-link {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-dim);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition), background var(--transition);
+    }
+    .nav-mobile-link:hover { color: var(--text); background: var(--bg-3); }
+
+    /* ─── HERO ───────────────────────────────────────────────── */
+    .hero {
+      padding: 96px 0 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -120px;
+      right: -200px;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle at 50% 50%, rgba(0,200,255,.07) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -80px;
+      left: -100px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle at 50% 50%, rgba(168,85,247,.05) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,200,255,.08);
+      border: 1px solid rgba(0,200,255,.2);
+      border-radius: 99px;
+      padding: 6px 16px 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cyan);
+      letter-spacing: .04em;
+      margin-bottom: 28px;
+      animation: fadeUp .5s ease both;
+    }
+    .hero-pill-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--cyan);
+      border-radius: 50%;
+      animation: pulse-cyan 2s ease infinite;
+    }
+    @keyframes pulse-cyan {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .5; transform: scale(.7); }
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(32px, 5.5vw, 62px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.02em;
+      color: var(--text);
+      max-width: 800px;
+      margin-bottom: 24px;
+      animation: fadeUp .5s .1s ease both;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(15px, 1.8vw, 18px);
+      color: var(--text-dim);
+      max-width: 580px;
+      line-height: 1.65;
+      margin-bottom: 36px;
+      animation: fadeUp .5s .18s ease both;
+    }
+    .hero-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 40px;
+      animation: fadeUp .5s .26s ease both;
+    }
+    .hero-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 7px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-dim);
+    }
+    .hero-chip-dot {
+      width: 5px;
+      height: 5px;
+      background: var(--cyan);
+      border-radius: 50%;
+    }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--cyan);
+      color: #03050f;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: var(--radius);
+      min-height: 50px;
+      transition: opacity var(--transition), transform var(--transition);
+      animation: fadeUp .5s .34s ease both;
+    }
+    .hero-cta:hover { opacity: .88; transform: translateY(-1px); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── TRACK CARDS ────────────────────────────────────────── */
+    .tracks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .track-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .track-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .track-card[data-color="cyan"]::before  { background: linear-gradient(90deg, var(--cyan), transparent); }
+    .track-card[data-color="purple"]::before { background: linear-gradient(90deg, var(--purple), transparent); }
+    .track-card[data-color="green"]::before  { background: linear-gradient(90deg, var(--green), transparent); }
+    .track-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 48px rgba(0,0,0,.4);
+    }
+    .track-card[data-color="cyan"]:hover   { border-color: rgba(0,200,255,.35); }
+    .track-card[data-color="purple"]:hover { border-color: rgba(168,85,247,.35); }
+    .track-card[data-color="green"]:hover  { border-color: rgba(0,229,160,.35); }
+
+    .track-icon {
+      font-size: 28px;
+      width: 52px;
+      height: 52px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .track-header { display: flex; flex-direction: column; gap: 4px; }
+    .track-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+    }
+    .track-card[data-color="cyan"]   .track-title { color: var(--cyan); }
+    .track-card[data-color="purple"] .track-title { color: var(--purple); }
+    .track-card[data-color="green"]  .track-title { color: var(--green); }
+    .track-subtitle { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+    .track-desc { font-size: 14px; color: var(--text-dim); line-height: 1.65; flex: 1; }
+    .track-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 99px;
+      border: 1px solid;
+    }
+    .track-card[data-color="cyan"]   .track-badge { color: var(--cyan);   border-color: rgba(0,200,255,.25);   background: rgba(0,200,255,.06); }
+    .track-card[data-color="purple"] .track-badge { color: var(--purple); border-color: rgba(168,85,247,.25); background: rgba(168,85,247,.06); }
+    .track-card[data-color="green"]  .track-badge { color: var(--green);  border-color: rgba(0,229,160,.25);  background: rgba(0,229,160,.06); }
+
+    .track-labs { display: flex; flex-direction: column; gap: 8px; }
+    .track-lab-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+    .track-lab-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .05em;
+      color: var(--text-muted);
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 8px;
+    }
+    .track-lab-name { color: var(--text-dim); flex: 1; }
+    .status-available {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--green);
+    }
+    .status-available::before {
+      content: '';
+      width: 5px; height: 5px;
+      background: var(--green);
+      border-radius: 50%;
+    }
+    .status-locked {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .track-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 11px 20px;
+      border-radius: var(--radius-sm);
+      min-height: 44px;
+      transition: opacity var(--transition), transform var(--transition);
+      text-align: center;
+      justify-content: center;
+    }
+    .track-cta-cyan   { background: rgba(0,200,255,.12);   color: var(--cyan);   border: 1px solid rgba(0,200,255,.2);   }
+    .track-cta-purple { background: rgba(168,85,247,.12);  color: var(--purple); border: 1px solid rgba(168,85,247,.2);  }
+    .track-cta-cyan:hover, .track-cta-purple:hover { opacity: .8; transform: translateY(-1px); }
+    .track-cta-disabled {
+      background: var(--bg-3);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      cursor: not-allowed;
+      opacity: .6;
+    }
+
+    /* ─── LAB FILTER TABS ────────────────────────────────────── */
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+    .filter-tab {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      background: var(--bg-3);
+      min-height: 40px;
+      transition: color var(--transition), border-color var(--transition), background var(--transition);
+    }
+    .filter-tab:hover { color: var(--text); border-color: var(--border-bright); }
+    .filter-tab.active {
+      background: var(--cyan);
+      color: #03050f;
+      border-color: var(--cyan);
+    }
+
+    /* ─── LAB GRID ───────────────────────────────────────────── */
+    .labs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+    }
+    .lab-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+    }
+    .lab-card:hover {
+      border-color: var(--border-bright);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0,0,0,.35);
+    }
+    .lab-card.locked { opacity: .65; }
+    .lab-card.locked:hover { transform: none; box-shadow: none; }
+
+    .lab-card-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .phase-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 99px;
+      border: 1px solid;
+    }
+    .phase-foundation { color: var(--cyan);   border-color: rgba(0,200,255,.25);   background: rgba(0,200,255,.08); }
+    .phase-amplify    { color: var(--purple); border-color: rgba(168,85,247,.25); background: rgba(168,85,247,.08); }
+    .phase-orchestrate{ color: var(--yellow); border-color: rgba(255,201,77,.25);  background: rgba(255,201,77,.08); }
+    .phase-master     { color: var(--green);  border-color: rgba(0,229,160,.25);  background: rgba(0,229,160,.08); }
+    .track-badge-small {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 99px;
+    }
+    .track-devin  { color: var(--cyan);   background: rgba(0,200,255,.1); }
+    .track-kiro   { color: var(--purple); background: rgba(168,85,247,.1); }
+    .track-ds     { color: var(--green);  background: rgba(0,229,160,.1); }
+
+    .lab-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: var(--text-muted);
+      background: var(--bg-4);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 8px;
+      margin-left: auto;
+    }
+    .lab-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+    .lab-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--text-dim);
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 4px 11px;
+    }
+    .lab-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: auto;
+    }
+    .lab-status-available {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--green);
+    }
+    .lab-status-available::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse-green 2s ease infinite;
+    }
+    @keyframes pulse-green {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,229,160,.4); }
+      50% { opacity: .8; box-shadow: 0 0 0 4px rgba(0,229,160,0); }
+    }
+    .lab-status-locked {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .lab-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #03050f;
+      background: var(--cyan);
+      padding: 9px 18px;
+      border-radius: var(--radius-sm);
+      min-height: 44px;
+      transition: opacity var(--transition), transform var(--transition);
+      flex-shrink: 0;
+    }
+    .lab-cta:hover { opacity: .85; transform: translateY(-1px); }
+
+    /* ─── PROGRESS SECTION ───────────────────────────────────── */
+    .progress-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .stat-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .stat-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .stat-card:nth-child(1) .stat-value { color: var(--cyan); }
+    .stat-card:nth-child(2) .stat-value { color: var(--yellow); }
+    .stat-card:nth-child(3) .stat-value { color: var(--purple); font-size: 15px; }
+
+    /* journey */
+    .journey { position: relative; }
+    .journey-line {
+      position: absolute;
+      left: 10px;
+      top: 16px;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+      border-radius: 99px;
+    }
+    .journey-steps { display: flex; flex-direction: column; gap: 0; }
+    .journey-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 16px 0;
+      position: relative;
+    }
+    .journey-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 1px;
+      position: relative;
+      z-index: 1;
+      border: 2px solid;
+      background: var(--bg);
+      transition: box-shadow var(--transition);
+    }
+    .journey-dot.active {
+      border-color: var(--cyan);
+      background: rgba(0,200,255,.15);
+      box-shadow: 0 0 0 4px rgba(0,200,255,.12), 0 0 0 8px rgba(0,200,255,.04);
+    }
+    .journey-dot.muted { border-color: var(--border-bright); background: var(--bg-3); }
+    .journey-content { display: flex; flex-direction: column; gap: 3px; padding-top: 1px; }
+    .journey-phase {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .journey-step:nth-child(1) .journey-phase { color: var(--cyan); }
+    .journey-step:nth-child(n+2) .journey-phase { color: var(--text-dim); }
+    .journey-sub { font-size: 13px; color: var(--text-muted); }
+    .journey-step:nth-child(1) .journey-sub { color: var(--text-dim); }
+    .journey-active-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      background: rgba(0,200,255,.1);
+      border: 1px solid rgba(0,200,255,.2);
+      border-radius: 99px;
+      padding: 2px 8px;
+      margin-top: 4px;
+      width: fit-content;
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────────── */
+    .footer {
+      margin-top: 100px;
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-copy {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .footer-link {
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: color var(--transition);
+    }
+    .footer-link:hover { color: var(--text-dim); }
+    .footer-sep { color: var(--border-bright); font-size: 12px; }
+
+    /* ─── DIVIDER ────────────────────────────────────────────── */
+    .section-divider {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+      margin: 80px 0 0;
+      opacity: .6;
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-inner { padding: 0 20px; gap: 16px; }
+      .nav-links  { display: none; }
+      .nav-hamburger { display: flex; }
+      .btn-github { display: none; }
+      .nav-actions { margin-left: 0; }
+
+      .page { padding: 0 16px 60px; }
+
+      .hero { padding: 60px 0 56px; }
+      .hero h1 { font-size: 32px; }
+      .hero-sub { font-size: 15px; }
+      .hero::before, .hero::after { display: none; }
+
+      .section { padding: 60px 0 0; }
+      .section-title { font-size: 26px; margin-bottom: 28px; }
+
+      .tracks-grid { grid-template-columns: 1fr; }
+      .labs-grid   { grid-template-columns: 1fr; }
+      .progress-stats { grid-template-columns: 1fr; }
+
+      .filter-tabs { gap: 6px; }
+      .filter-tab  { font-size: 12px; padding: 7px 14px; }
+
+      .footer-inner { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .section-divider { margin: 60px 0 0; }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 28px; }
+      .hero-cta { font-size: 14px; padding: 13px 22px; }
+      .track-card { padding: 22px 18px; }
+      .lab-card   { padding: 20px 16px; }
+      .stat-card  { padding: 20px; }
+    }
+
+    /* ─── Hidden utility ─────────────────────────────────────── */
+    [data-hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+
+<!-- ═══ NAV ════════════════════════════════════════════════════ -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <span class="nav-logo-text">FORGE<span>.</span></span>
+      <span class="nav-badge">NTT DATA</span>
+    </a>
+
+    <div class="nav-links">
+      <a href="#trilhas"  class="nav-link">Trilhas</a>
+      <a href="#labs"     class="nav-link">Labs</a>
+      <a href="#progresso" class="nav-link">Progresso</a>
+    </div>
+
+    <div class="nav-actions">
+      <a href="https://github.com/Brunooacks" target="_blank" rel="noopener" class="btn-github">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.483 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.341-3.369-1.341-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+        </svg>
+        GitHub
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M2.5 9.5L9.5 2.5M9.5 2.5H4.5M9.5 2.5V7.5"/>
+        </svg>
+      </a>
+    </div>
+
+    <button class="nav-hamburger" id="hamburgerBtn" aria-label="Abrir menu" aria-expanded="false">
+      <svg id="iconMenu" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/>
+      </svg>
+      <svg id="iconClose" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none" aria-hidden="true">
+        <line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="nav-mobile-menu" id="mobileMenu" role="navigation" aria-label="Menu móvel">
+    <a href="#trilhas"   class="nav-mobile-link" onclick="closeMobileMenu()">Trilhas</a>
+    <a href="#labs"      class="nav-mobile-link" onclick="closeMobileMenu()">Labs</a>
+    <a href="#progresso" class="nav-mobile-link" onclick="closeMobileMenu()">Progresso</a>
+    <a href="https://github.com/Brunooacks" target="_blank" rel="noopener" class="nav-mobile-link" style="color:var(--cyan)">GitHub ↗</a>
+  </div>
+</nav>
+
+
+<!-- ═══ HERO ════════════════════════════════════════════════════ -->
+<div class="page">
+  <section class="hero">
+    <div class="hero-pill">
+      <span class="hero-pill-dot"></span>
+      FORGE Engineering Program
+    </div>
+
+    <h1>Treine com as ferramentas que <em>definem</em> o futuro da engenharia</h1>
+
+    <p class="hero-sub">
+      Trilhas práticas de Devin, Kiro e Design System para engenheiros NTT DATA — do Foundation ao Master.
+    </p>
+
+    <div class="hero-stats">
+      <span class="hero-chip"><span class="hero-chip-dot"></span>8 Laboratórios</span>
+      <span class="hero-chip"><span class="hero-chip-dot" style="background:var(--purple)"></span>4 Fases</span>
+      <span class="hero-chip"><span class="hero-chip-dot" style="background:var(--yellow)"></span>E1–E4</span>
+    </div>
+
+    <a href="#labs" class="hero-cta">
+      Ver Labs
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </a>
+  </section>
+
+  <div class="section-divider"></div>
+
+
+  <!-- ═══ TRACKS ══════════════════════════════════════════════ -->
+  <section class="section" id="trilhas">
+    <div class="section-label">Trilhas</div>
+    <h2 class="section-title">Escolha sua trilha de especialização</h2>
+
+    <div class="tracks-grid">
+
+      <!-- Devin -->
+      <article class="track-card" data-color="cyan">
+        <div class="track-icon">⚡</div>
+        <div class="track-header">
+          <span class="track-title">Devin</span>
+          <span class="track-subtitle">AI-Driven Development</span>
+        </div>
+        <p class="track-desc">Delegue tarefas completas de desenvolvimento a um agente autônomo. Do primeiro prompt ao deploy, sem boilerplate manual.</p>
+        <span class="track-badge">Foundation → Master</span>
+        <div class="track-labs">
+          <div class="track-lab-row">
+            <span class="track-lab-num">LAB 01</span>
+            <span class="track-lab-name">First Deploy with Devin</span>
+            <span class="status-available">Disponível</span>
+          </div>
+          <div class="track-lab-row">
+            <span class="track-lab-num">LAB 07</span>
+            <span class="track-lab-name">Squad Project Simulation</span>
+            <span class="status-locked">🔒 Em breve</span>
+          </div>
+        </div>
+        <a href="lab-01.html" class="track-cta track-cta-cyan">Começar LAB 01 →</a>
+      </article>
+
+      <!-- Kiro -->
+      <article class="track-card" data-color="purple">
+        <div class="track-icon">🔀</div>
+        <div class="track-header">
+          <span class="track-title">Kiro</span>
+          <span class="track-subtitle">API Orchestration</span>
+        </div>
+        <p class="track-desc">Orquestre APIs bancárias complexas com workflows declarativos. PIX, antifraude, Open Finance — tudo com SLA garantido.</p>
+        <span class="track-badge">Foundation → Amplify</span>
+        <div class="track-labs">
+          <div class="track-lab-row">
+            <span class="track-lab-num">LAB 02</span>
+            <span class="track-lab-name">API Orchestration with Kiro</span>
+            <span class="status-available">Disponível</span>
+          </div>
+          <div class="track-lab-row">
+            <span class="track-lab-num">LAB 04</span>
+            <span class="track-lab-name">CI/CD Pipeline AI-Driven</span>
+            <span class="status-locked">🔒 Em breve</span>
+          </div>
+          <div class="track-lab-row">
+            <span class="track-lab-num">LAB 05</span>
+            <span class="track-lab-name">Multi-Agent Workflow</span>
+            <span class="status-locked">🔒 Em breve</span>
+          </div>
+        </div>
+        <a href="lab-02.html" class="track-cta track-cta-purple">Começar LAB 02 →</a>
+      </article>
+
+      <!-- Design System -->
+      <article class="track-card" data-color="green">
+        <div class="track-icon">🎨</div>
+        <div class="track-header">
+          <span class="track-title">Design System</span>
+          <span class="track-subtitle">Code Quality &amp; Standards</span>
+        </div>
+        <p class="track-desc">Automatize code review, enforça padrões arquiteturais e construa sistemas de design escaláveis com IA como guardião de qualidade.</p>
+        <span class="track-badge">Amplify → Master</span>
+        <div class="track-labs">
+          <div class="track-lab-row">
+            <span class="track-lab-num">LAB 03</span>
+            <span class="track-lab-name">Automated Code Review</span>
+            <span class="status-locked">🔒 Em breve</span>
+          </div>
+          <div class="track-lab-row">
+            <span class="track-lab-num">LAB 06</span>
+            <span class="track-lab-name">Context and Memory Systems</span>
+            <span class="status-locked">🔒 Em breve</span>
+          </div>
+          <div class="track-lab-row">
+            <span class="track-lab-num">LAB 08</span>
+            <span class="track-lab-name">Final Certification Project</span>
+            <span class="status-locked">🔒 Em breve</span>
+          </div>
+        </div>
+        <button class="track-cta track-cta-disabled" disabled>Em breve</button>
+      </article>
+
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+
+  <!-- ═══ LABS ════════════════════════════════════════════════ -->
+  <section class="section" id="labs">
+    <div class="section-label">Laboratórios</div>
+    <h2 class="section-title">Todos os Labs</h2>
+
+    <div class="filter-tabs" role="tablist" aria-label="Filtrar por fase">
+      <button class="filter-tab active" data-filter="all"         role="tab" aria-selected="true">Todos</button>
+      <button class="filter-tab"        data-filter="foundation"  role="tab" aria-selected="false">Foundation</button>
+      <button class="filter-tab"        data-filter="amplify"     role="tab" aria-selected="false">Amplify</button>
+      <button class="filter-tab"        data-filter="orchestrate" role="tab" aria-selected="false">Orchestrate</button>
+      <button class="filter-tab"        data-filter="master"      role="tab" aria-selected="false">Master</button>
+    </div>
+
+    <div class="labs-grid" id="labsGrid">
+
+      <!-- LAB 01 -->
+      <article class="lab-card" data-phase="foundation">
+        <div class="lab-card-top">
+          <span class="phase-badge phase-foundation">Foundation</span>
+          <span class="track-badge-small track-devin">Devin</span>
+          <span class="lab-num">LAB 01</span>
+        </div>
+        <h3 class="lab-title">First Deploy with Devin</h3>
+        <div class="lab-meta">
+          <span class="meta-chip">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            4h
+          </span>
+          <span class="meta-chip">E1–E4</span>
+        </div>
+        <div class="lab-footer">
+          <span class="lab-status-available">Disponível</span>
+          <a href="lab-01.html" class="lab-cta">
+            Iniciar
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <!-- LAB 02 -->
+      <article class="lab-card" data-phase="foundation">
+        <div class="lab-card-top">
+          <span class="phase-badge phase-foundation">Foundation</span>
+          <span class="track-badge-small track-kiro">Kiro</span>
+          <span class="lab-num">LAB 02</span>
+        </div>
+        <h3 class="lab-title">API Orchestration with Kiro</h3>
+        <div class="lab-meta">
+          <span class="meta-chip">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            4–6h
+          </span>
+          <span class="meta-chip">E1–E4</span>
+        </div>
+        <div class="lab-footer">
+          <span class="lab-status-available">Disponível</span>
+          <a href="lab-02.html" class="lab-cta">
+            Iniciar
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <!-- LAB 03 -->
+      <article class="lab-card locked" data-phase="amplify">
+        <div class="lab-card-top">
+          <span class="phase-badge phase-amplify">Amplify</span>
+          <span class="track-badge-small track-ds">Design System</span>
+          <span class="lab-num">LAB 03</span>
+        </div>
+        <h3 class="lab-title">Automated Code Review</h3>
+        <div class="lab-meta">
+          <span class="meta-chip">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            4h
+          </span>
+          <span class="meta-chip">E2–E3</span>
+        </div>
+        <div class="lab-footer">
+          <span class="lab-status-locked">🔒 Em breve</span>
+        </div>
+      </article>
+
+      <!-- LAB 04 -->
+      <article class="lab-card locked" data-phase="amplify">
+        <div class="lab-card-top">
+          <span class="phase-badge phase-amplify">Amplify</span>
+          <span class="track-badge-small track-kiro">Kiro</span>
+          <span class="lab-num">LAB 04</span>
+        </div>
+        <h3 class="lab-title">CI/CD Pipeline AI-Driven</h3>
+        <div class="lab-meta">
+          <span class="meta-chip">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            8h
+          </span>
+          <span class="meta-chip">E3</span>
+        </div>
+        <div class="lab-footer">
+          <span class="lab-status-locked">🔒 Em breve</span>
+        </div>
+      </article>
+
+      <!-- LAB 05 -->
+      <article class="lab-card locked" data-phase="orchestrate">
+        <div class="lab-card-top">
+          <span class="phase-badge phase-orchestrate">Orchestrate</span>
+          <span class="track-badge-small track-kiro">Kiro</span>
+          <span class="lab-num">LAB 05</span>
+        </div>
+        <h3 class="lab-title">Multi-Agent Workflow</h3>
+        <div class="lab-meta">
+          <span class="meta-chip">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            8h
+          </span>
+          <span class="meta-chip">E3–E4</span>
+        </div>
+        <div class="lab-footer">
+          <span class="lab-status-locked">🔒 Em breve</span>
+        </div>
+      </article>
+
+      <!-- LAB 06 -->
+      <article class="lab-card locked" data-phase="orchestrate">
+        <div class="lab-card-top">
+          <span class="phase-badge phase-orchestrate">Orchestrate</span>
+          <span class="track-badge-small track-ds">Design System</span>
+          <span class="lab-num">LAB 06</span>
+        </div>
+        <h3 class="lab-title">Context and Memory Systems</h3>
+        <div class="lab-meta">
+          <span class="meta-chip">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            6h
+          </span>
+          <span class="meta-chip">E3–E4</span>
+        </div>
+        <div class="lab-footer">
+          <span class="lab-status-locked">🔒 Em breve</span>
+        </div>
+      </article>
+
+      <!-- LAB 07 -->
+      <article class="lab-card locked" data-phase="master">
+        <div class="lab-card-top">
+          <span class="phase-badge phase-master">Master</span>
+          <span class="track-badge-small track-devin">Devin</span>
+          <span class="lab-num">LAB 07</span>
+        </div>
+        <h3 class="lab-title">Squad Project Simulation</h3>
+        <div class="lab-meta">
+          <span class="meta-chip">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            12h
+          </span>
+          <span class="meta-chip">E3–E4</span>
+        </div>
+        <div class="lab-footer">
+          <span class="lab-status-locked">🔒 Em breve</span>
+        </div>
+      </article>
+
+      <!-- LAB 08 -->
+      <article class="lab-card locked" data-phase="master">
+        <div class="lab-card-top">
+          <span class="phase-badge phase-master">Master</span>
+          <span class="track-badge-small track-ds">Design System</span>
+          <span class="lab-num">LAB 08</span>
+        </div>
+        <h3 class="lab-title">Final Certification Project</h3>
+        <div class="lab-meta">
+          <span class="meta-chip">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            16h
+          </span>
+          <span class="meta-chip">E4</span>
+        </div>
+        <div class="lab-footer">
+          <span class="lab-status-locked">🔒 Em breve</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+
+  <!-- ═══ PROGRESS ════════════════════════════════════════════ -->
+  <section class="section" id="progresso">
+    <div class="section-label">Progresso</div>
+    <h2 class="section-title">Sua jornada FORGE</h2>
+
+    <div class="progress-stats">
+      <div class="stat-card">
+        <span class="stat-label">Labs disponíveis</span>
+        <span class="stat-value">2 / 8</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Fase ativa</span>
+        <span class="stat-value">Foundation</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Próximo lab</span>
+        <span class="stat-value">LAB 03 — Code Review</span>
+      </div>
+    </div>
+
+    <div class="journey">
+      <div class="journey-line" aria-hidden="true"></div>
+      <div class="journey-steps">
+
+        <div class="journey-step">
+          <div class="journey-dot active" aria-label="Fase ativa"></div>
+          <div class="journey-content">
+            <span class="journey-phase">Foundation</span>
+            <span class="journey-sub">LAB 01–02 · Em curso</span>
+            <span class="journey-active-badge">Em curso</span>
+          </div>
+        </div>
+
+        <div class="journey-step">
+          <div class="journey-dot muted"></div>
+          <div class="journey-content">
+            <span class="journey-phase">Amplify</span>
+            <span class="journey-sub">LAB 03–04 · Em breve</span>
+          </div>
+        </div>
+
+        <div class="journey-step">
+          <div class="journey-dot muted"></div>
+          <div class="journey-content">
+            <span class="journey-phase">Orchestrate</span>
+            <span class="journey-sub">LAB 05–06 · Em breve</span>
+          </div>
+        </div>
+
+        <div class="journey-step">
+          <div class="journey-dot muted"></div>
+          <div class="journey-content">
+            <span class="journey-phase">Master</span>
+            <span class="journey-sub">LAB 07–08 · Em breve</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</div><!-- /page -->
+
+
+<!-- ═══ FOOTER ══════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <span class="footer-copy">FORGE Engineering · NTT DATA · 2026</span>
+    <nav class="footer-links" aria-label="Links do rodapé">
+      <a href="https://github.com/Brunooacks" target="_blank" rel="noopener" class="footer-link">GitHub</a>
+      <span class="footer-sep" aria-hidden="true">·</span>
+      <a href="lab-01.html" class="footer-link">LAB 01</a>
+      <span class="footer-sep" aria-hidden="true">·</span>
+      <a href="lab-02.html" class="footer-link">LAB 02</a>
+    </nav>
+  </div>
+</footer>
+
+
+<!-- ═══ JAVASCRIPT ═══════════════════════════════════════════════ -->
+<script>
+  /* ── Hamburger ──────────────────────────────────────────────── */
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const mobileMenu   = document.getElementById('mobileMenu');
+  const iconMenu     = document.getElementById('iconMenu');
+  const iconClose    = document.getElementById('iconClose');
+
+  hamburgerBtn.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.toggle('open');
+    hamburgerBtn.setAttribute('aria-expanded', isOpen);
+    iconMenu.style.display  = isOpen ? 'none'  : '';
+    iconClose.style.display = isOpen ? ''      : 'none';
+  });
+
+  function closeMobileMenu() {
+    mobileMenu.classList.remove('open');
+    hamburgerBtn.setAttribute('aria-expanded', 'false');
+    iconMenu.style.display  = '';
+    iconClose.style.display = 'none';
+  }
+
+  /* Close mobile menu on outside click */
+  document.addEventListener('click', (e) => {
+    if (!hamburgerBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+      closeMobileMenu();
+    }
+  });
+
+  /* ── Lab filter tabs ────────────────────────────────────────── */
+  const filterTabs = document.querySelectorAll('.filter-tab');
+  const labCards   = document.querySelectorAll('#labsGrid .lab-card');
+
+  filterTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      /* update active tab */
+      filterTabs.forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+
+      const filter = tab.dataset.filter;
+
+      labCards.forEach(card => {
+        if (filter === 'all' || card.dataset.phase === filter) {
+          card.removeAttribute('data-hidden');
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  /* ── Smooth scroll for anchor links ────────────────────────── */
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        const navH = document.getElementById('nav').offsetHeight;
+        const top  = target.getBoundingClientRect().top + window.scrollY - navH - 16;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+
+  /* ── Intersection Observer: fade-in on scroll ───────────────── */
+  if ('IntersectionObserver' in window) {
+    const style = document.createElement('style');
+    style.textContent = `
+      .lab-card, .track-card, .stat-card, .journey-step {
+        opacity: 0;
+        transform: translateY(16px);
+        transition: opacity .45s ease, transform .45s ease;
+      }
+      .lab-card.visible, .track-card.visible, .stat-card.visible, .journey-step.visible {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+      }
+      .lab-card.locked { opacity: 0; }
+      .lab-card.locked.visible { opacity: .65 !important; }
+    `;
+    document.head.appendChild(style);
+
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 45);
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('.lab-card, .track-card, .stat-card, .journey-step')
+      .forEach(el => obs.observe(el));
+  }
+</script>
+
+</body>
+</html>
