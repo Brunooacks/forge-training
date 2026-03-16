@@ -821,6 +821,7 @@
   </style>
 </head>
 <body>
+<script>if(!localStorage.getItem('forge_auth'))window.location.replace('login.html');</script>
 
   <!-- ─── NAV ─────────────────────────────────────────────────── -->
   <nav class="nav">
@@ -833,6 +834,8 @@
         <a href="index.html" class="nav-link">← Labs</a>
         <a href="lab-01.html" class="nav-link">LAB 01</a>
         <a href="lab-02.html" class="nav-link active">LAB 02</a>
+        <a href="levels.html" class="nav-link">Níveis E1–E4</a>
+        <a href="artifacts.html" class="nav-link">Artefatos</a>
       </div>
       <button class="nav-hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
@@ -844,6 +847,8 @@
       <a href="index.html" class="nav-mobile-link">← Todos os Labs</a>
       <a href="lab-01.html" class="nav-mobile-link">LAB 01 — Devin</a>
       <a href="lab-02.html" class="nav-mobile-link active">LAB 02 — Kiro (atual)</a>
+      <a href="levels.html" class="nav-mobile-link">Níveis E1–E4</a>
+      <a href="artifacts.html" class="nav-mobile-link">Artefatos</a>
     </div>
   </nav>
 

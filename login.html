@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FORGE. — Acesso</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #03050f;
+      --bg-2: #090d1f;
+      --bg-3: #0f1428;
+      --bg-4: #141930;
+      --cyan: #00c8ff;
+      --green: #00e5a0;
+      --yellow: #ffc94d;
+      --red: #ff5c7a;
+      --purple: #a855f7;
+      --border: #1e2540;
+      --border-bright: #2a3560;
+      --text: #e8eaf6;
+      --text-dim: #8892aa;
+      --text-muted: #4d5570;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    /* Animated background */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(0, 200, 255, 0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 90%, rgba(168, 85, 247, 0.06) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(0, 229, 160, 0.04) 0%, transparent 60%),
+        var(--bg);
+      animation: bgPulse 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgPulse {
+      0% {
+        background:
+          radial-gradient(ellipse 80% 60% at 20% 10%, rgba(0, 200, 255, 0.07) 0%, transparent 60%),
+          radial-gradient(ellipse 60% 50% at 80% 90%, rgba(168, 85, 247, 0.06) 0%, transparent 55%),
+          radial-gradient(ellipse 50% 40% at 50% 50%, rgba(0, 229, 160, 0.04) 0%, transparent 60%),
+          var(--bg);
+      }
+      100% {
+        background:
+          radial-gradient(ellipse 80% 60% at 25% 15%, rgba(0, 200, 255, 0.11) 0%, transparent 60%),
+          radial-gradient(ellipse 60% 50% at 75% 85%, rgba(168, 85, 247, 0.09) 0%, transparent 55%),
+          radial-gradient(ellipse 50% 40% at 50% 50%, rgba(0, 229, 160, 0.06) 0%, transparent 60%),
+          var(--bg);
+      }
+    }
+
+    /* Grid overlay */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* Page layout */
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    /* Login card */
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--bg-2);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius);
+      padding: 40px 36px 36px;
+      box-shadow:
+        0 0 0 1px rgba(0, 200, 255, 0.04),
+        0 24px 64px rgba(0, 0, 0, 0.6),
+        0 4px 16px rgba(0, 0, 0, 0.4);
+      animation: cardIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Logo area */
+    .logo-area {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .logo-mark {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 1px;
+      font-family: 'Syne', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .logo-mark .dot {
+      color: var(--cyan);
+      font-size: 2.6rem;
+      line-height: 1;
+    }
+
+    .ntt-badge {
+      display: inline-block;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 3px 8px;
+      margin-top: 4px;
+    }
+
+    .tagline {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      margin-top: 14px;
+      line-height: 1.4;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+    }
+
+    /* Form */
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      letter-spacing: 0.02em;
+    }
+
+    .field input {
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+
+    .field input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .field input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(0, 200, 255, 0.12);
+    }
+
+    .field input.error-input {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(255, 92, 122, 0.12);
+    }
+
+    /* Error message */
+    .error-msg {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 92, 122, 0.08);
+      border: 1px solid rgba(255, 92, 122, 0.25);
+      border-radius: var(--radius-sm);
+      color: var(--red);
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 10px 14px;
+      margin-top: 4px;
+      animation: shakeIn 0.3s ease both;
+    }
+
+    .error-msg.visible {
+      display: flex;
+    }
+
+    @keyframes shakeIn {
+      0% { transform: translateX(-6px); opacity: 0; }
+      40% { transform: translateX(4px); }
+      70% { transform: translateX(-2px); }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+
+    .error-icon {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Submit button */
+    .btn-submit {
+      width: 100%;
+      background: var(--cyan);
+      color: #03050f;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 13px 24px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      margin-top: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-submit::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .btn-submit:hover {
+      background: #19d4ff;
+      box-shadow: 0 0 20px rgba(0, 200, 255, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Loading spinner inside button */
+    .btn-submit .spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(3, 5, 15, 0.3);
+      border-top-color: #03050f;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin: 0 auto;
+    }
+
+    .btn-submit.loading .btn-text { display: none; }
+    .btn-submit.loading .spinner { display: block; }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Demo credentials box */
+    .demo-box {
+      margin-top: 20px;
+      background: rgba(0, 200, 255, 0.04);
+      border: 1px solid rgba(0, 200, 255, 0.12);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .demo-icon {
+      flex-shrink: 0;
+      margin-top: 1px;
+      color: var(--cyan);
+      opacity: 0.7;
+    }
+
+    .demo-text {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .demo-text strong {
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .demo-text code {
+      font-family: 'DM Mono', 'Fira Code', 'Courier New', monospace;
+      background: var(--bg-4);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-size: 0.76rem;
+      color: var(--cyan);
+      letter-spacing: 0.02em;
+    }
+
+    /* Footer */
+    .card-footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+
+    .card-footer span {
+      color: var(--text-muted);
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-layer"></div>
+  <div class="bg-grid"></div>
+
+  <div class="page">
+    <div class="card">
+
+      <!-- Logo -->
+      <div class="logo-area">
+        <div class="logo-mark">FORGE<span class="dot">.</span></div>
+        <div><span class="ntt-badge">NTT DATA</span></div>
+        <p class="tagline">Plataforma de Treinamento — Acesso Restrito</p>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Form -->
+      <form class="form" id="loginForm" novalidate>
+
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="seu@email.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="password">Senha</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+
+        <!-- Error message -->
+        <div class="error-msg" id="errorMsg" role="alert" aria-live="polite">
+          <svg class="error-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8 5v3.5M8 11h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span id="errorText">Senha incorreta. Tente novamente.</span>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <span class="btn-text">Entrar</span>
+          <div class="spinner"></div>
+        </button>
+
+      </form>
+
+      <!-- Demo credentials -->
+      <div class="demo-box">
+        <svg class="demo-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M8 7v5M8 5h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <p class="demo-text">
+          <strong>Acesso demo:</strong> qualquer e-mail + senha&nbsp;<code>forge2026</code>
+        </p>
+      </div>
+
+      <div class="card-footer">
+        <span>&copy; 2026 NTT DATA &mdash; Uso interno</span>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      // Redirect immediately if already authenticated
+      if (localStorage.getItem('forge_auth') === '1') {
+        window.location.replace('index.html');
+        return;
+      }
+
+      const form       = document.getElementById('loginForm');
+      const emailInput = document.getElementById('email');
+      const passInput  = document.getElementById('password');
+      const errorMsg   = document.getElementById('errorMsg');
+      const errorText  = document.getElementById('errorText');
+      const submitBtn  = document.getElementById('submitBtn');
+
+      const VALID_PASSWORD = 'forge2026';
+
+      function showError(message) {
+        errorText.textContent = message;
+        errorMsg.classList.add('visible');
+        passInput.classList.add('error-input');
+        passInput.focus();
+      }
+
+      function clearError() {
+        errorMsg.classList.remove('visible');
+        passInput.classList.remove('error-input');
+        emailInput.classList.remove('error-input');
+      }
+
+      function setLoading(state) {
+        submitBtn.disabled = state;
+        submitBtn.classList.toggle('loading', state);
+      }
+
+      // Clear error when user starts typing
+      passInput.addEventListener('input', clearError);
+      emailInput.addEventListener('input', function () {
+        emailInput.classList.remove('error-input');
+        if (!passInput.value) clearError();
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        clearError();
+
+        const email    = emailInput.value.trim();
+        const password = passInput.value;
+
+        // Basic validation
+        if (!email) {
+          showError('Por favor, informe seu e-mail.');
+          emailInput.classList.add('error-input');
+          emailInput.focus();
+          return;
+        }
+
+        if (!password) {
+          showError('Por favor, informe sua senha.');
+          passInput.focus();
+          return;
+        }
+
+        setLoading(true);
+
+        // Simulate brief async check for polish
+        setTimeout(function () {
+          if (password === VALID_PASSWORD) {
+            localStorage.setItem('forge_auth', '1');
+            window.location.replace('index.html');
+          } else {
+            setLoading(false);
+            showError('Senha incorreta. Verifique e tente novamente.');
+          }
+        }, 500);
+      });
+    })();
+  </script>
+
+</body>
+</html>

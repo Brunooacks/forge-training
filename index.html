@@ -316,6 +316,7 @@
       font-weight: 700;
       padding: 14px 28px;
       border-radius: var(--radius);
+      border: 1px solid transparent;
       min-height: 50px;
       transition: opacity var(--transition), transform var(--transition);
       animation: fadeUp .5s .34s ease both;
@@ -760,6 +761,222 @@
     .footer-link:hover { color: var(--text-dim); }
     .footer-sep { color: var(--border-bright); font-size: 12px; }
 
+    /* ─── TRILHAS CAPACITATÓRIAS ─────────────────────────────── */
+    .cap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .cap-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: border-color .2s, transform .2s;
+    }
+    .cap-card:hover { border-color: var(--border-bright); transform: translateY(-2px); }
+    .cap-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .cap-icon {
+      font-size: 22px;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-3);
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+    .cap-title {
+      font-family: var(--font-head);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--cap-color, var(--cyan));
+    }
+    .cap-sub { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: .3px; margin-top: 2px; }
+    .cap-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+    .cap-steps {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+    }
+    .cap-step {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+    .cap-step.accent { color: var(--cap-color, var(--cyan)); border-color: color-mix(in srgb, var(--cap-color, var(--cyan)) 30%, transparent); }
+    .cap-arrow { font-size: 11px; color: var(--text-muted); }
+    .cap-meta { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
+    .cap-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+    .cap-tool-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 20px;
+      border: 1px solid;
+      background: transparent;
+    }
+    .cap-labs-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .cap-lab-chip {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--bg-4);
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+    .cap-lab-chip.locked { color: var(--text-muted); opacity: .6; }
+    .cap-cta-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      background: var(--bg-2);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius);
+      padding: 20px 28px;
+    }
+    .cap-cta-text { display: flex; flex-direction: column; gap: 4px; }
+    .cap-cta-text strong { font-size: 15px; color: var(--text); }
+    .cap-cta-text span { font-size: 13px; color: var(--text-muted); }
+    .cap-cta-btn {
+      background: var(--cyan);
+      color: var(--bg);
+      font-weight: 700;
+      font-size: 13px;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: background .2s;
+      white-space: nowrap;
+    }
+    .cap-cta-btn:hover { background: #33d4ff; }
+    @media (max-width: 768px) {
+      .cap-grid { grid-template-columns: 1fr; }
+      .cap-cta-bar { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* ─── FORGE ACRONYM ──────────────────────────────────────── */
+    .forge-acronym {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 40px 0 0;
+      animation: fadeUp .5s .34s ease both;
+    }
+    .forge-letter-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      flex: 1;
+      min-width: 150px;
+      transition: border-color var(--transition), background var(--transition);
+    }
+    .forge-letter-card:hover { border-color: var(--fl-color, var(--cyan)); background: var(--bg-3); }
+    .forge-big-letter {
+      font-family: 'Syne', sans-serif;
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--fl-color, var(--cyan));
+      flex-shrink: 0;
+    }
+    .forge-word { display: flex; flex-direction: column; gap: 3px; }
+    .forge-word-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); }
+    .forge-word-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+
+    /* ─── JOURNEY / HOW IT WORKS ─────────────────────────────── */
+    .journey-section {
+      padding: 80px 0 0;
+    }
+    .journey-flow {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr auto 1fr;
+      align-items: center;
+      gap: 0;
+      margin-top: 40px;
+    }
+    .jf-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+    }
+    .jf-dot {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--bg-2);
+      border: 2px solid var(--jf-color, var(--cyan));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--jf-color, var(--cyan)) 12%, transparent);
+    }
+    .jf-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--jf-color, var(--cyan));
+    }
+    .jf-sublabel { font-size: 11px; color: var(--text-muted); line-height: 1.4; margin-top: -4px; }
+    .jf-arrow {
+      font-size: 20px;
+      color: var(--border-bright);
+      padding: 0 4px;
+      padding-bottom: 28px; /* align with dot center */
+    }
+    .journey-note {
+      margin-top: 28px;
+      padding: 16px 24px;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .journey-note strong { color: var(--text-dim); }
+    @media (max-width: 768px) {
+      .journey-flow {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .jf-node { flex-direction: row; text-align: left; }
+      .jf-dot { width: 40px; height: 40px; font-size: 16px; }
+      .jf-arrow { display: none; }
+      .jf-label { font-size: 12px; }
+      .forge-acronym { gap: 8px; }
+      .forge-letter-card { min-width: 140px; }
+    }
+
     /* ─── DIVIDER ────────────────────────────────────────────── */
     .section-divider {
       width: 100%;
@@ -811,6 +1028,7 @@
   </style>
 </head>
 <body>
+<script>if(!localStorage.getItem('forge_auth'))window.location.replace('login.html');</script>
 
 <!-- ═══ NAV ════════════════════════════════════════════════════ -->
 <nav class="nav" id="nav">
@@ -821,12 +1039,14 @@
     </a>
 
     <div class="nav-links">
-      <a href="#trilhas"  class="nav-link">Trilhas</a>
-      <a href="#labs"     class="nav-link">Labs</a>
-      <a href="#progresso" class="nav-link">Progresso</a>
+      <a href="#capacitacao"   class="nav-link">Capacitação</a>
+      <a href="#labs"          class="nav-link">Especialização</a>
+      <a href="levels.html"    class="nav-link">Níveis E1–E4</a>
+      <a href="artifacts.html" class="nav-link" style="color:var(--cyan)">Artefatos</a>
     </div>
 
     <div class="nav-actions">
+      <button onclick="localStorage.removeItem('forge_auth');window.location.replace('login.html')" style="font-size:12px;font-weight:600;color:var(--text-muted);background:none;border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 14px;cursor:pointer;min-height:36px;transition:color .2s,border-color .2s" onmouseover="this.style.color='var(--text)';this.style.borderColor='var(--border-bright)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">Sair</button>
       <a href="https://github.com/Brunooacks" target="_blank" rel="noopener" class="btn-github">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.483 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.341-3.369-1.341-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
@@ -849,9 +1069,10 @@
   </div>
 
   <div class="nav-mobile-menu" id="mobileMenu" role="navigation" aria-label="Menu móvel">
-    <a href="#trilhas"   class="nav-mobile-link" onclick="closeMobileMenu()">Trilhas</a>
-    <a href="#labs"      class="nav-mobile-link" onclick="closeMobileMenu()">Labs</a>
-    <a href="#progresso" class="nav-mobile-link" onclick="closeMobileMenu()">Progresso</a>
+    <a href="#capacitacao"   class="nav-mobile-link" onclick="closeMobileMenu()">Capacitação</a>
+    <a href="#labs"          class="nav-mobile-link" onclick="closeMobileMenu()">Especialização</a>
+    <a href="levels.html"    class="nav-mobile-link" onclick="closeMobileMenu()">Níveis E1–E4</a>
+    <a href="artifacts.html" class="nav-mobile-link" onclick="closeMobileMenu()" style="color:var(--cyan)">Artefatos</a>
     <a href="https://github.com/Brunooacks" target="_blank" rel="noopener" class="nav-mobile-link" style="color:var(--cyan)">GitHub ↗</a>
   </div>
 </nav>
@@ -865,128 +1086,305 @@
       FORGE Engineering Program
     </div>
 
-    <h1>Treine com as ferramentas que <em>definem</em> o futuro da engenharia</h1>
+    <h1>O programa que transforma engenheiros em <em>referências</em></h1>
 
     <p class="hero-sub">
-      Trilhas práticas de Devin, Kiro e Design System para engenheiros NTT DATA — do Foundation ao Master.
+      FORGE é o caminho estruturado da NTT DATA para evoluir de E1 a E4 — com trilhas práticas, labs hands-on, certificações de mercado e ferramentas de IA como Devin e Kiro.
     </p>
 
     <div class="hero-stats">
       <span class="hero-chip"><span class="hero-chip-dot"></span>8 Laboratórios</span>
       <span class="hero-chip"><span class="hero-chip-dot" style="background:var(--purple)"></span>4 Fases</span>
       <span class="hero-chip"><span class="hero-chip-dot" style="background:var(--yellow)"></span>E1–E4</span>
+      <span class="hero-chip"><span class="hero-chip-dot" style="background:var(--green)"></span>Certs Mercado</span>
     </div>
 
-    <a href="#labs" class="hero-cta">
-      Ver Labs
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M5 12h14M12 5l7 7-7 7"/>
-      </svg>
-    </a>
-  </section>
-
-  <div class="section-divider"></div>
-
-
-  <!-- ═══ TRACKS ══════════════════════════════════════════════ -->
-  <section class="section" id="trilhas">
-    <div class="section-label">Trilhas</div>
-    <h2 class="section-title">Escolha sua trilha de especialização</h2>
-
-    <div class="tracks-grid">
-
-      <!-- Devin -->
-      <article class="track-card" data-color="cyan">
-        <div class="track-icon">⚡</div>
-        <div class="track-header">
-          <span class="track-title">Devin</span>
-          <span class="track-subtitle">AI-Driven Development</span>
+    <!-- FORGE Acronym -->
+    <div class="forge-acronym">
+      <div class="forge-letter-card" style="--fl-color:#00c8ff">
+        <span class="forge-big-letter">F</span>
+        <div class="forge-word">
+          <span class="forge-word-title">Foundation</span>
+          <span class="forge-word-desc">Base sólida em IA e engenharia real</span>
         </div>
-        <p class="track-desc">Delegue tarefas completas de desenvolvimento a um agente autônomo. Do primeiro prompt ao deploy, sem boilerplate manual.</p>
-        <span class="track-badge">Foundation → Master</span>
-        <div class="track-labs">
-          <div class="track-lab-row">
-            <span class="track-lab-num">LAB 01</span>
-            <span class="track-lab-name">First Deploy with Devin</span>
-            <span class="status-available">Disponível</span>
-          </div>
-          <div class="track-lab-row">
-            <span class="track-lab-num">LAB 07</span>
-            <span class="track-lab-name">Squad Project Simulation</span>
-            <span class="status-locked">🔒 Em breve</span>
-          </div>
+      </div>
+      <div class="forge-letter-card" style="--fl-color:#a855f7">
+        <span class="forge-big-letter">O</span>
+        <div class="forge-word">
+          <span class="forge-word-title">Orchestrate</span>
+          <span class="forge-word-desc">Agentes e APIs com precisão</span>
         </div>
-        <a href="lab-01.html" class="track-cta track-cta-cyan">Começar LAB 01 →</a>
-      </article>
+      </div>
+      <div class="forge-letter-card" style="--fl-color:#ff5c7a">
+        <span class="forge-big-letter">R</span>
+        <div class="forge-word">
+          <span class="forge-word-title">Resilience</span>
+          <span class="forge-word-desc">Sistemas robustos e seguros</span>
+        </div>
+      </div>
+      <div class="forge-letter-card" style="--fl-color:#ffc94d">
+        <span class="forge-big-letter">G</span>
+        <div class="forge-word">
+          <span class="forge-word-title">Growth</span>
+          <span class="forge-word-desc">Evolução de E1 a E4 com marcos claros</span>
+        </div>
+      </div>
+      <div class="forge-letter-card" style="--fl-color:#00e5a0">
+        <span class="forge-big-letter">E</span>
+        <div class="forge-word">
+          <span class="forge-word-title">Excellence</span>
+          <span class="forge-word-desc">Excelência técnica no contexto bancário</span>
+        </div>
+      </div>
+    </div>
 
-      <!-- Kiro -->
-      <article class="track-card" data-color="purple">
-        <div class="track-icon">🔀</div>
-        <div class="track-header">
-          <span class="track-title">Kiro</span>
-          <span class="track-subtitle">API Orchestration</span>
-        </div>
-        <p class="track-desc">Orquestre APIs bancárias complexas com workflows declarativos. PIX, antifraude, Open Finance — tudo com SLA garantido.</p>
-        <span class="track-badge">Foundation → Amplify</span>
-        <div class="track-labs">
-          <div class="track-lab-row">
-            <span class="track-lab-num">LAB 02</span>
-            <span class="track-lab-name">API Orchestration with Kiro</span>
-            <span class="status-available">Disponível</span>
-          </div>
-          <div class="track-lab-row">
-            <span class="track-lab-num">LAB 04</span>
-            <span class="track-lab-name">CI/CD Pipeline AI-Driven</span>
-            <span class="status-locked">🔒 Em breve</span>
-          </div>
-          <div class="track-lab-row">
-            <span class="track-lab-num">LAB 05</span>
-            <span class="track-lab-name">Multi-Agent Workflow</span>
-            <span class="status-locked">🔒 Em breve</span>
-          </div>
-        </div>
-        <a href="lab-02.html" class="track-cta track-cta-purple">Começar LAB 02 →</a>
-      </article>
-
-      <!-- Design System -->
-      <article class="track-card" data-color="green">
-        <div class="track-icon">🎨</div>
-        <div class="track-header">
-          <span class="track-title">Design System</span>
-          <span class="track-subtitle">Code Quality &amp; Standards</span>
-        </div>
-        <p class="track-desc">Automatize code review, enforça padrões arquiteturais e construa sistemas de design escaláveis com IA como guardião de qualidade.</p>
-        <span class="track-badge">Amplify → Master</span>
-        <div class="track-labs">
-          <div class="track-lab-row">
-            <span class="track-lab-num">LAB 03</span>
-            <span class="track-lab-name">Automated Code Review</span>
-            <span class="status-locked">🔒 Em breve</span>
-          </div>
-          <div class="track-lab-row">
-            <span class="track-lab-num">LAB 06</span>
-            <span class="track-lab-name">Context and Memory Systems</span>
-            <span class="status-locked">🔒 Em breve</span>
-          </div>
-          <div class="track-lab-row">
-            <span class="track-lab-num">LAB 08</span>
-            <span class="track-lab-name">Final Certification Project</span>
-            <span class="status-locked">🔒 Em breve</span>
-          </div>
-        </div>
-        <button class="track-cta track-cta-disabled" disabled>Em breve</button>
-      </article>
-
+    <div style="margin-top:40px;display:flex;gap:12px;flex-wrap:wrap;animation:fadeUp .5s .4s ease both">
+      <a href="levels.html" class="hero-cta">
+        Ver Níveis E1–E4
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#labs" class="hero-cta" style="background:var(--bg-3);color:var(--text-dim);border-color:var(--border)">
+        Explorar Labs →
+      </a>
     </div>
   </section>
 
   <div class="section-divider"></div>
 
+  <!-- ═══ COMO FUNCIONA / JORNADA ═════════════════════════════ -->
+  <section class="journey-section" id="jornada">
+    <div class="section-label">Como funciona</div>
+    <h2 class="section-title">A jornada FORGE em 5 passos</h2>
+    <p class="hero-sub" style="margin-bottom:0;animation:none">Do seu nível atual até Staff Engineer — cada passo conectado ao anterior.</p>
 
-  <!-- ═══ LABS ════════════════════════════════════════════════ -->
+    <div class="journey-flow">
+      <!-- Nível -->
+      <div class="jf-node">
+        <div class="jf-dot" style="--jf-color:var(--cyan)">🎯</div>
+        <div class="jf-label">Seu Nível</div>
+        <div class="jf-sublabel">E1 · E2 · E3 · E4</div>
+      </div>
+      <div class="jf-arrow">→</div>
+
+      <!-- Fase -->
+      <div class="jf-node">
+        <div class="jf-dot" style="--jf-color:var(--purple)">📍</div>
+        <div class="jf-label">Fase FORGE</div>
+        <div class="jf-sublabel">Foundation · Amplify<br>Orchestrate · Master</div>
+      </div>
+      <div class="jf-arrow">→</div>
+
+      <!-- Trilhas -->
+      <div class="jf-node">
+        <div class="jf-dot" style="--jf-color:var(--yellow)">🛠️</div>
+        <div class="jf-label">Trilhas & Ferramentas</div>
+        <div class="jf-sublabel">Devin · Kiro<br>Design System</div>
+      </div>
+      <div class="jf-arrow">→</div>
+
+      <!-- Labs -->
+      <div class="jf-node">
+        <div class="jf-dot" style="--jf-color:#ff5c7a">🔬</div>
+        <div class="jf-label">Laboratórios</div>
+        <div class="jf-sublabel">LAB 01–08<br>hands-on reais</div>
+      </div>
+      <div class="jf-arrow">→</div>
+
+      <!-- Certificação -->
+      <div class="jf-node">
+        <div class="jf-dot" style="--jf-color:var(--green)">🏅</div>
+        <div class="jf-label">Certificação</div>
+        <div class="jf-sublabel">FORGE + mercado<br>AWS · Devin · K8s</div>
+      </div>
+    </div>
+
+    <div class="journey-note">
+      <strong>Como ler a plataforma:</strong> Descubra seu nível em <a href="levels.html" style="color:var(--cyan)">Níveis E1–E4</a> → entenda as competências nas <strong>Trilhas Capacitatórias</strong> → reforce com os <strong>Labs de Especialização</strong> usando Devin e Kiro → obtenha as certificações FORGE e de mercado (AWS, Kubernetes, BIAN).
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══ TRILHAS CAPACITATÓRIAS ══════════════════════════════ -->
+  <section class="section" id="capacitacao">
+    <div class="section-label">Trilhas Capacitatórias</div>
+    <h2 class="section-title">Ciclo completo de engenharia</h2>
+    <p class="section-sub">Competências que definem o engenheiro completo — cada trilha usa as ferramentas como aceleradores, não como fim em si mesmas.</p>
+
+    <div class="cap-grid">
+
+      <!-- 1. Ciclo de Desenvolvimento -->
+      <div class="cap-card">
+        <div class="cap-header" style="--cap-color:#00c8ff">
+          <div class="cap-icon">⚙️</div>
+          <div>
+            <div class="cap-title">Ciclo de Desenvolvimento</div>
+            <div class="cap-sub">Requirements → Code → Test → Deploy</div>
+          </div>
+        </div>
+        <p class="cap-desc">Do levantamento de requisitos ao deploy em produção com autonomia. Devin escreve, Kiro orquestra, você decide.</p>
+        <div class="cap-steps">
+          <span class="cap-step">Requisitos</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step accent">Design</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step">Código</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step">Testes</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step accent">Deploy</span>
+        </div>
+        <div class="cap-meta">
+          <div class="cap-tools"><span class="cap-tool-badge" style="color:#00c8ff;border-color:#00c8ff44">Devin</span><span class="cap-tool-badge" style="color:#a855f7;border-color:#a855f744">Kiro</span></div>
+          <div class="cap-labs-row"><span class="cap-lab-chip">LAB 01</span><span class="cap-lab-chip">LAB 02</span><span class="cap-lab-chip locked">LAB 04</span></div>
+        </div>
+      </div>
+
+      <!-- 2. Qualidade & Testes -->
+      <div class="cap-card">
+        <div class="cap-header" style="--cap-color:#00e5a0">
+          <div class="cap-icon">🧪</div>
+          <div>
+            <div class="cap-title">Qualidade & Testes</div>
+            <div class="cap-sub">Review → Standards → Coverage → Compliance</div>
+          </div>
+        </div>
+        <p class="cap-desc">Automatize revisão de código, crie padrões reutilizáveis e construa a cultura de qualidade que escala com o time.</p>
+        <div class="cap-steps">
+          <span class="cap-step">Code Review</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step accent">Cobertura</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step">Padrões</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step accent">Escala</span>
+        </div>
+        <div class="cap-meta">
+          <div class="cap-tools"><span class="cap-tool-badge" style="color:#00e5a0;border-color:#00e5a044">Design System</span><span class="cap-tool-badge" style="color:#00c8ff;border-color:#00c8ff44">Devin</span></div>
+          <div class="cap-labs-row"><span class="cap-lab-chip locked">LAB 03</span><span class="cap-lab-chip locked">LAB 06</span></div>
+        </div>
+      </div>
+
+      <!-- 3. Segurança & Compliance -->
+      <div class="cap-card">
+        <div class="cap-header" style="--cap-color:#ff5c7a">
+          <div class="cap-icon">🔐</div>
+          <div>
+            <div class="cap-title">Segurança & Compliance</div>
+            <div class="cap-sub">LGPD · BACEN · PCI-DSS · SOX</div>
+          </div>
+        </div>
+        <p class="cap-desc">Compliance bancário como prática de engenharia — não como checklist. LGPD, BACEN 4.658 e PCI-DSS embutidos no fluxo de desenvolvimento.</p>
+        <div class="cap-steps">
+          <span class="cap-step">Threat Model</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step accent">Sec Review</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step">Audit Log</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step accent">Pen Test</span>
+        </div>
+        <div class="cap-meta">
+          <div class="cap-tools"><span class="cap-tool-badge" style="color:#ff5c7a;border-color:#ff5c7a44">Artefatos</span><span class="cap-tool-badge" style="color:#00c8ff;border-color:#00c8ff44">Devin</span></div>
+          <div class="cap-labs-row"><span class="cap-lab-chip">LAB 01</span><span class="cap-lab-chip">LAB 02</span><span class="cap-lab-chip locked">LAB 05</span></div>
+        </div>
+      </div>
+
+      <!-- 4. DevOps & Plataforma -->
+      <div class="cap-card">
+        <div class="cap-header" style="--cap-color:#ffc94d">
+          <div class="cap-icon">🚀</div>
+          <div>
+            <div class="cap-title">DevOps & Plataforma</div>
+            <div class="cap-sub">Container → CI/CD → Observability → SRE</div>
+          </div>
+        </div>
+        <p class="cap-desc">De containers ao SRE: automatize pipelines, monitore SLAs do BACEN e opere microserviços bancários com confiança.</p>
+        <div class="cap-steps">
+          <span class="cap-step">Container</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step accent">CI/CD</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step">Observ.</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step accent">SRE</span>
+        </div>
+        <div class="cap-meta">
+          <div class="cap-tools"><span class="cap-tool-badge" style="color:#a855f7;border-color:#a855f744">Kiro</span><span class="cap-tool-badge" style="color:#00c8ff;border-color:#00c8ff44">Devin</span></div>
+          <div class="cap-labs-row"><span class="cap-lab-chip locked">LAB 04</span><span class="cap-lab-chip locked">LAB 05</span></div>
+        </div>
+      </div>
+
+      <!-- 5. Arquitetura Bancária -->
+      <div class="cap-card">
+        <div class="cap-header" style="--cap-color:#a855f7">
+          <div class="cap-icon">🏛️</div>
+          <div>
+            <div class="cap-title">Arquitetura Bancária</div>
+            <div class="cap-sub">BIAN · DDD · Microsserviços · Open Finance</div>
+          </div>
+        </div>
+        <p class="cap-desc">Design de sistemas bancários escaláveis: domain-driven, BIAN-aligned, prontos para Open Finance e regulação BACEN.</p>
+        <div class="cap-steps">
+          <span class="cap-step">Domínios</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step accent">APIs</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step">Orquestração</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step accent">Gov.</span>
+        </div>
+        <div class="cap-meta">
+          <div class="cap-tools"><span class="cap-tool-badge" style="color:#a855f7;border-color:#a855f744">Kiro</span><span class="cap-tool-badge" style="color:#00e5a0;border-color:#00e5a044">Design System</span></div>
+          <div class="cap-labs-row"><span class="cap-lab-chip">LAB 02</span><span class="cap-lab-chip locked">LAB 05</span><span class="cap-lab-chip locked">LAB 07</span></div>
+        </div>
+      </div>
+
+      <!-- 6. Engenharia de Times -->
+      <div class="cap-card">
+        <div class="cap-header" style="--cap-color:#ffc94d">
+          <div class="cap-icon">👥</div>
+          <div>
+            <div class="cap-title">Engenharia de Times</div>
+            <div class="cap-sub">Squad Setup · Multi-Agent · Certificação</div>
+          </div>
+        </div>
+        <p class="cap-desc">De engenheiro individual a multiplicador de time: defina padrões, construa squads multi-agent e certifique competências.</p>
+        <div class="cap-steps">
+          <span class="cap-step">Padrões</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step accent">Templates</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step">Simulação</span>
+          <span class="cap-arrow">→</span>
+          <span class="cap-step accent">Certificação</span>
+        </div>
+        <div class="cap-meta">
+          <div class="cap-tools"><span class="cap-tool-badge" style="color:#00c8ff;border-color:#00c8ff44">Devin</span><span class="cap-tool-badge" style="color:#a855f7;border-color:#a855f744">Kiro</span></div>
+          <div class="cap-labs-row"><span class="cap-lab-chip locked">LAB 07</span><span class="cap-lab-chip locked">LAB 08</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CTA artefatos -->
+    <div class="cap-cta-bar">
+      <div class="cap-cta-text">
+        <strong>Artefatos prontos para uso</strong>
+        <span>10 prompts · 4 agents · scripts de automação — use hoje no seu time</span>
+      </div>
+      <a href="artifacts.html" class="cap-cta-btn">Ver catálogo de artefatos →</a>
+    </div>
+
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══ TRILHAS DE ESPECIALIZAÇÃO / LABS ════════════════════ -->
   <section class="section" id="labs">
-    <div class="section-label">Laboratórios</div>
-    <h2 class="section-title">Todos os Labs</h2>
+    <div class="section-label">Trilhas de Especialização</div>
+    <h2 class="section-title">Laboratórios — coloque em prática</h2>
+    <p class="section-sub" style="margin-bottom:32px">Cada lab usa <strong style="color:var(--cyan)">Devin</strong> e <strong style="color:var(--purple)">Kiro</strong> para reforçar as competências das trilhas capacitatórias. Filtre por fase para seguir a progressão do seu nível.</p>
 
     <div class="filter-tabs" role="tablist" aria-label="Filtrar por fase">
       <button class="filter-tab active" data-filter="all"         role="tab" aria-selected="true">Todos</button>
@@ -1324,12 +1722,12 @@
   if ('IntersectionObserver' in window) {
     const style = document.createElement('style');
     style.textContent = `
-      .lab-card, .track-card, .stat-card, .journey-step {
+      .lab-card, .track-card, .stat-card, .journey-step, .cap-card {
         opacity: 0;
         transform: translateY(16px);
         transition: opacity .45s ease, transform .45s ease;
       }
-      .lab-card.visible, .track-card.visible, .stat-card.visible, .journey-step.visible {
+      .lab-card.visible, .track-card.visible, .stat-card.visible, .journey-step.visible, .cap-card.visible {
         opacity: 1 !important;
         transform: translateY(0) !important;
       }
@@ -1347,7 +1745,7 @@
       });
     }, { threshold: 0.08 });
 
-    document.querySelectorAll('.lab-card, .track-card, .stat-card, .journey-step')
+    document.querySelectorAll('.lab-card, .track-card, .stat-card, .journey-step, .cap-card')
       .forEach(el => obs.observe(el));
   }
 </script>

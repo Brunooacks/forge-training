@@ -858,6 +858,7 @@
   </style>
 </head>
 <body>
+<script>if(!localStorage.getItem('forge_auth'))window.location.replace('login.html');</script>
 
 <!-- ══════════════════════════════════════════════════ NAV -->
 <nav>
@@ -872,8 +873,8 @@
       <li><a href="#conceitos">Conceitos</a></li>
       <li><a href="#demo">Demo</a></li>
       <li><a href="#exercicio">Exercício</a></li>
-      <li><a href="#catalogo">Catálogo</a></li>
-      <li><a href="#qualidade">Qualidade</a></li>
+      <li><a href="levels.html">Níveis E1–E4</a></li>
+      <li><a href="artifacts.html">Artefatos</a></li>
       <li><a href="#exercicio" class="nav-cta">Começar Lab</a></li>
     </ul>
     <button class="nav-hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
@@ -888,8 +889,8 @@
     <a href="#conceitos" onclick="closeMobileMenu()">Conceitos</a>
     <a href="#demo" onclick="closeMobileMenu()">Demo</a>
     <a href="#exercicio" onclick="closeMobileMenu()">Exercício</a>
-    <a href="#catalogo" onclick="closeMobileMenu()">Catálogo</a>
-    <a href="#qualidade" onclick="closeMobileMenu()">Qualidade</a>
+    <a href="levels.html" onclick="closeMobileMenu()">Níveis E1–E4</a>
+    <a href="artifacts.html" onclick="closeMobileMenu()">Artefatos</a>
     <a href="#exercicio" class="nav-cta" onclick="closeMobileMenu()">Começar Lab</a>
   </div>
 </nav>

@@ -1,0 +1,1991 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Níveis E1→E4 — FORGE Engineering Training Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Design Tokens ─────────────────────────────────────── */
+    :root {
+      --bg:            #03050f;
+      --bg-2:          #090d1f;
+      --bg-3:          #0f1428;
+      --bg-4:          #141930;
+      --cyan:          #00c8ff;
+      --cyan-dim:      #00c8ff22;
+      --cyan-glow:     #00c8ff44;
+      --green:         #00e5a0;
+      --yellow:        #ffc94d;
+      --red:           #ff5c7a;
+      --purple:        #a855f7;
+      --border:        #1e2540;
+      --border-bright: #2a3560;
+      --text:          #e8eaf6;
+      --text-dim:      #8892aa;
+      --text-muted:    #4d5570;
+      --font-head:     'Syne', sans-serif;
+      --font-body:     'DM Sans', sans-serif;
+      --radius:        12px;
+      --radius-sm:     8px;
+      --nav-h:         68px;
+      --transition:    0.22s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ─── Reset ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    img { display: block; max-width: 100%; }
+
+    /* ─── Scrollbar ──────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-2); }
+    ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 99px; }
+
+    /* ─── Animations ─────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse-cyan {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: .5; transform: scale(.7); }
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0,200,255,.3); }
+      50%       { box-shadow: 0 0 0 8px rgba(0,200,255,0); }
+    }
+
+    /* ─── Layout helpers ─────────────────────────────────────── */
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px 80px;
+    }
+    .section { padding: 80px 0 0; }
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-head);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 16px;
+      height: 2px;
+      background: var(--border-bright);
+      border-radius: 99px;
+    }
+    .section-title {
+      font-family: var(--font-head);
+      font-size: clamp(26px, 3.5vw, 40px);
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.15;
+      margin-bottom: 40px;
+    }
+
+    /* ─── NAV ────────────────────────────────────────────────── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      height: var(--nav-h);
+      background: rgba(3,5,15,.85);
+      backdrop-filter: blur(18px) saturate(1.4);
+      -webkit-backdrop-filter: blur(18px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .nav-logo-text {
+      font-family: var(--font-head);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.01em;
+      color: var(--text);
+    }
+    .nav-logo-text span { color: var(--cyan); }
+    .nav-badge {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      color: var(--text-dim);
+      background: var(--bg-4);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 8px;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+    .nav-link {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-dim);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition), background var(--transition);
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+    .nav-link:hover { color: var(--text); background: var(--bg-3); }
+    .nav-link.active {
+      color: var(--cyan);
+      background: rgba(0,200,255,.08);
+      border: 1px solid rgba(0,200,255,.2);
+    }
+    .nav-hamburger {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      transition: color var(--transition), border-color var(--transition);
+      margin-left: auto;
+    }
+    .nav-hamburger:hover { color: var(--text); border-color: var(--border-bright); }
+    .nav-mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: var(--bg-2);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px 20px;
+      gap: 4px;
+      position: sticky;
+      top: var(--nav-h);
+      z-index: 199;
+    }
+    .nav-mobile-menu.open { display: flex; }
+    .nav-mobile-link {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-dim);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      transition: color var(--transition), background var(--transition);
+    }
+    .nav-mobile-link:hover { color: var(--text); background: var(--bg-3); }
+    .nav-mobile-link.active { color: var(--cyan); background: rgba(0,200,255,.08); }
+
+    /* ─── BREADCRUMB ─────────────────────────────────────────── */
+    .breadcrumb {
+      padding: 20px 0 0;
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .breadcrumb a { color: var(--text-dim); transition: color var(--transition); }
+    .breadcrumb a:hover { color: var(--cyan); }
+    .breadcrumb-sep { color: var(--text-muted); }
+    .breadcrumb-current { color: var(--cyan); font-weight: 500; }
+
+    /* ─── HERO ───────────────────────────────────────────────── */
+    .hero {
+      padding: 64px 0 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      right: -200px;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle at 50% 50%, rgba(0,200,255,.07) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      left: -100px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle at 50% 50%, rgba(168,85,247,.05) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,200,255,.08);
+      border: 1px solid rgba(0,200,255,.2);
+      border-radius: 99px;
+      padding: 6px 16px 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cyan);
+      letter-spacing: .04em;
+      margin-bottom: 24px;
+      animation: fadeUp .5s ease both;
+    }
+    .hero-pill-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--cyan);
+      border-radius: 50%;
+      animation: pulse-cyan 2s ease infinite;
+    }
+    .hero h1 {
+      font-family: var(--font-head);
+      font-size: clamp(30px, 5vw, 56px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.02em;
+      color: var(--text);
+      max-width: 740px;
+      margin-bottom: 20px;
+      animation: fadeUp .5s .1s ease both;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(15px, 1.8vw, 18px);
+      color: var(--text-dim);
+      max-width: 580px;
+      line-height: 1.65;
+      margin-bottom: 32px;
+      animation: fadeUp .5s .18s ease both;
+    }
+    .hero-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      animation: fadeUp .5s .26s ease both;
+    }
+    .hero-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 7px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-dim);
+    }
+    .hero-chip-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    /* ─── LEVEL OVERVIEW BAR ─────────────────────────────────── */
+    .level-bar-wrap {
+      position: sticky;
+      top: var(--nav-h);
+      z-index: 100;
+      background: rgba(9,13,31,.92);
+      backdrop-filter: blur(14px) saturate(1.3);
+      -webkit-backdrop-filter: blur(14px) saturate(1.3);
+      border-bottom: 1px solid var(--border);
+      padding: 0;
+      transition: box-shadow var(--transition);
+    }
+    .level-bar-wrap.shadowed {
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    }
+    .level-bar {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 12px 32px;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .level-bar::-webkit-scrollbar { display: none; }
+    .level-bar-item {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex: 1;
+      min-width: 120px;
+    }
+    .level-bar-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background var(--transition);
+      border: 1px solid transparent;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .level-bar-chip:hover { background: var(--bg-3); }
+    .level-bar-chip.active-bar { border-color: var(--accent-color); background: rgba(var(--accent-rgb), .08); }
+    .level-bar-badge {
+      font-family: var(--font-head);
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--accent-color);
+      letter-spacing: .04em;
+    }
+    .level-bar-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+    .level-bar-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .level-bar-connector {
+      height: 2px;
+      flex: 0 0 32px;
+      background: var(--border);
+      border-radius: 99px;
+    }
+    /* per-level accent rgb values for rgba() usage */
+    .lb-e1 { --accent-color: var(--cyan); --accent-rgb: 0,200,255; }
+    .lb-e2 { --accent-color: var(--purple); --accent-rgb: 168,85,247; }
+    .lb-e3 { --accent-color: var(--yellow); --accent-rgb: 255,201,77; }
+    .lb-e4 { --accent-color: var(--green); --accent-rgb: 0,229,160; }
+
+    /* ─── LEVEL SECTION ──────────────────────────────────────── */
+    .level-section {
+      padding: 80px 0 0;
+    }
+    .level-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 28px;
+      margin-bottom: 32px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .level-number-badge {
+      font-family: var(--font-head);
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -.03em;
+      color: var(--lv-accent);
+      background: rgba(var(--lv-rgb), .1);
+      border: 2px solid rgba(var(--lv-rgb), .25);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      flex-shrink: 0;
+      min-width: 90px;
+      text-align: center;
+    }
+    .level-header-info {
+      flex: 1;
+    }
+    .level-phase-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--lv-accent);
+      background: rgba(var(--lv-rgb), .1);
+      border: 1px solid rgba(var(--lv-rgb), .25);
+      border-radius: 99px;
+      padding: 4px 12px;
+      margin-bottom: 10px;
+    }
+    .level-title {
+      font-family: var(--font-head);
+      font-size: clamp(22px, 3vw, 34px);
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+    .level-exp {
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+    .level-desc {
+      font-size: 15px;
+      color: var(--text-dim);
+      line-height: 1.65;
+      max-width: 680px;
+    }
+
+    /* ─── LEVEL per-accent vars ─── */
+    .lv-e1 { --lv-accent: var(--cyan);   --lv-rgb: 0,200,255; }
+    .lv-e2 { --lv-accent: var(--purple); --lv-rgb: 168,85,247; }
+    .lv-e3 { --lv-accent: var(--yellow); --lv-rgb: 255,201,77; }
+    .lv-e4 { --lv-accent: var(--green);  --lv-rgb: 0,229,160; }
+
+    /* ─── STAT GRID ──────────────────────────────────────────── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .stat-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .stat-value {
+      font-family: var(--font-head);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+    .stat-value.accented { color: var(--lv-accent); }
+    .stat-note {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ─── LEVEL CONTENT GRID ─────────────────────────────────── */
+    .level-content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 40px;
+    }
+    .level-block {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .level-block-title {
+      font-family: var(--font-head);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .level-block-title::before {
+      content: '';
+      display: block;
+      width: 3px;
+      height: 16px;
+      background: var(--lv-accent);
+      border-radius: 99px;
+    }
+
+    /* ─── COMPETENCY LIST ────────────────────────────────────── */
+    .comp-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .comp-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .comp-icon {
+      flex-shrink: 0;
+      font-size: 15px;
+      margin-top: 1px;
+    }
+    .comp-text { color: var(--text-dim); }
+    .comp-text.locked { color: var(--text-muted); }
+    .comp-locked-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: var(--bg-4);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    /* ─── LAB TABLE ──────────────────────────────────────────── */
+    .lab-table-wrap {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+    .lab-table-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .lab-table-header-title {
+      font-family: var(--font-head);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .lab-table-header-title::before {
+      display: none;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    thead th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-3);
+    }
+    tbody td {
+      padding: 14px 24px;
+      font-size: 14px;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr.lab-locked { opacity: .5; }
+    tbody tr.lab-locked td { color: var(--text-muted); }
+    .lab-id {
+      font-family: var(--font-head);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--lv-accent);
+      background: rgba(var(--lv-rgb), .1);
+      border: 1px solid rgba(var(--lv-rgb), .2);
+      border-radius: 6px;
+      padding: 3px 8px;
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .lab-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 99px;
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+    .lab-status-badge.available {
+      color: var(--green);
+      background: rgba(0,229,160,.1);
+      border: 1px solid rgba(0,229,160,.2);
+    }
+    .lab-status-badge.soon {
+      color: var(--text-muted);
+      background: var(--bg-4);
+      border: 1px solid var(--border);
+    }
+
+    /* ─── TRACKS ─────────────────────────────────────────────── */
+    .track-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .track-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+    .track-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--lv-accent);
+      flex-shrink: 0;
+    }
+
+    /* ─── PROMOTION CRITERIA ─────────────────────────────────── */
+    .criteria-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .criteria-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+    .criteria-check {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 2px solid var(--border-bright);
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ─── SECTION DIVIDER ────────────────────────────────────── */
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 80px 0 0;
+    }
+
+    /* ─── COMPARISON TABLE ───────────────────────────────────── */
+    .compare-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .compare-table {
+      width: 100%;
+      min-width: 700px;
+      border-collapse: collapse;
+    }
+    .compare-table thead th {
+      padding: 16px 20px;
+      background: var(--bg-3);
+      border-bottom: 2px solid var(--border);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+    }
+    .compare-table thead th:first-child { text-align: left; }
+    .compare-table thead th.th-e1 { color: var(--cyan); }
+    .compare-table thead th.th-e2 { color: var(--purple); }
+    .compare-table thead th.th-e3 { color: var(--yellow); }
+    .compare-table thead th.th-e4 { color: var(--green); }
+    .compare-table tbody td {
+      padding: 14px 20px;
+      font-size: 13px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .compare-table tbody td:first-child {
+      text-align: left;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--bg-3);
+      white-space: nowrap;
+    }
+    .compare-table tbody tr:last-child td { border-bottom: none; }
+    .compare-table tbody tr:hover td { background: var(--bg-3); }
+    .compare-table tbody tr:hover td:first-child { background: var(--bg-4); }
+
+    /* ─── MARKET CERT BADGES ─────────────────────────────────── */
+    .mkt-cert-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .mkt-cert-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      padding: 3px 9px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.15);
+      color: var(--text-dim);
+      background: var(--bg-3);
+      white-space: nowrap;
+    }
+    .mkt-cert-badge.aws    { color: #ff9900; border-color: rgba(255,153,0,.3); background: rgba(255,153,0,.07); }
+    .mkt-cert-badge.devin  { color: var(--cyan); border-color: rgba(0,200,255,.3); background: rgba(0,200,255,.07); }
+    .mkt-cert-badge.k8s    { color: #326ce5; border-color: rgba(50,108,229,.3); background: rgba(50,108,229,.07); }
+    .mkt-cert-badge.gh     { color: #e8eaf6; border-color: rgba(232,234,246,.2); background: rgba(232,234,246,.05); }
+    .mkt-cert-badge.tf     { color: #7b42bc; border-color: rgba(123,66,188,.3); background: rgba(123,66,188,.07); }
+    .mkt-cert-badge.bian   { color: var(--green); border-color: rgba(0,229,160,.3); background: rgba(0,229,160,.07); }
+
+    /* ─── CERTIFICATION CARDS ────────────────────────────────── */
+    .cert-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    .cert-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--cert-accent);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .cert-e1 { --cert-accent: var(--cyan); }
+    .cert-e2 { --cert-accent: var(--purple); }
+    .cert-e3 { --cert-accent: var(--yellow); }
+    .cert-e4 { --cert-accent: var(--green); }
+    .cert-icon { font-size: 32px; line-height: 1; }
+    .cert-level-badge {
+      display: inline-flex;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--cert-accent);
+      background: rgba(var(--cert-rgb), .1);
+      border: 1px solid rgba(var(--cert-rgb), .25);
+      border-radius: 99px;
+      padding: 3px 10px;
+      width: fit-content;
+    }
+    .cert-e1 { --cert-rgb: 0,200,255; }
+    .cert-e2 { --cert-rgb: 168,85,247; }
+    .cert-e3 { --cert-rgb: 255,201,77; }
+    .cert-e4 { --cert-rgb: 0,229,160; }
+    .cert-name {
+      font-family: var(--font-head);
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .cert-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .cert-row {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .cert-row-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .cert-row-val {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+    .cert-validity {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--cert-accent);
+      margin-top: auto;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ─── TIMELINE ───────────────────────────────────────────── */
+    .timeline-wrap {
+      position: relative;
+      padding: 20px 0 40px;
+    }
+    .timeline-track {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      position: relative;
+    }
+    .timeline-track::before {
+      content: '';
+      position: absolute;
+      top: 22px;
+      left: 28px;
+      right: 28px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--cyan), var(--purple), var(--yellow), var(--green));
+      border-radius: 99px;
+      z-index: 0;
+    }
+    .timeline-node {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+    .timeline-dot {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 3px solid var(--tl-color);
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-head);
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--tl-color);
+      flex-shrink: 0;
+    }
+    .timeline-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 4px;
+    }
+    .timeline-label {
+      font-family: var(--font-head);
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--tl-color);
+    }
+    .timeline-period {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .timeline-cert {
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 2px 8px;
+    }
+    .tl-e1 { --tl-color: var(--cyan); }
+    .tl-e2 { --tl-color: var(--purple); }
+    .tl-e3 { --tl-color: var(--yellow); }
+    .tl-e4 { --tl-color: var(--green); }
+    .timeline-note {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px 32px;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
+      color: var(--text-dim);
+      line-height: 1.65;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .timeline-note strong { color: var(--text); }
+    .timeline-total {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 20px;
+      font-family: var(--font-head);
+      font-weight: 800;
+      color: var(--text);
+    }
+    .timeline-total span { color: var(--green); }
+
+    /* ─── BOTTOM CTA ─────────────────────────────────────────── */
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-top: 80px;
+      padding: 32px;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 22px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      background: var(--bg-3);
+      transition: color var(--transition), border-color var(--transition), background var(--transition);
+      min-height: 44px;
+    }
+    .cta-btn:hover { color: var(--text); border-color: var(--border-bright); background: var(--bg-4); }
+    .cta-btn.primary {
+      background: rgba(0,200,255,.1);
+      border-color: rgba(0,200,255,.3);
+      color: var(--cyan);
+    }
+    .cta-btn.primary:hover {
+      background: rgba(0,200,255,.18);
+      border-color: rgba(0,200,255,.5);
+      color: var(--cyan);
+    }
+    .cta-sep { flex: 1; }
+
+    /* ─── FULL-WIDTH BLOCKS ──────────────────────────────────── */
+    .full-block {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 40px;
+    }
+    .full-block-title {
+      font-family: var(--font-head);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .full-block-title::before {
+      content: '';
+      display: block;
+      width: 3px;
+      height: 16px;
+      background: var(--lv-accent);
+      border-radius: 99px;
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+      .level-content-grid { grid-template-columns: 1fr; }
+      .cert-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 700px) {
+      .page { padding: 0 20px 60px; }
+      .nav-inner { padding: 0 20px; gap: 12px; }
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .stat-grid { grid-template-columns: 1fr; }
+      .cert-grid { grid-template-columns: 1fr; }
+      .level-header { flex-direction: column; gap: 16px; }
+      .level-number-badge { font-size: 32px; min-width: 70px; }
+      .level-bar { padding: 10px 20px; }
+      .level-bar-item { min-width: 90px; }
+      .timeline-track::before { display: none; }
+      .timeline-track {
+        flex-direction: column;
+        gap: 24px;
+        padding-left: 24px;
+      }
+      .timeline-track::after {
+        content: '';
+        position: absolute;
+        left: 22px;
+        top: 44px;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(180deg, var(--cyan), var(--purple), var(--yellow), var(--green));
+        border-radius: 99px;
+        z-index: 0;
+      }
+      .timeline-node {
+        flex-direction: row;
+        align-items: flex-start;
+        text-align: left;
+      }
+      .timeline-content { align-items: flex-start; text-align: left; }
+      .cta-row { flex-direction: column; align-items: flex-start; }
+      .cta-sep { display: none; }
+      .level-bar-connector { flex: 0 0 16px; }
+    }
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 28px; }
+      .level-content-grid { gap: 16px; }
+      thead th { padding: 10px 12px; font-size: 10px; }
+      tbody td { padding: 12px 12px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+<script>if(!localStorage.getItem('forge_auth'))window.location.replace('login.html');</script>
+
+<!-- ═══════════════════════════════════════════════════════ NAV -->
+<nav class="nav" id="top-nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <span class="nav-logo-text">FORGE<span>.</span></span>
+      <span class="nav-badge">NTT DATA</span>
+    </a>
+    <div class="nav-links">
+      <a class="nav-link" href="index.html">← Home</a>
+      <a class="nav-link" href="index.html#labs">Labs</a>
+      <a class="nav-link" href="artifacts.html">Artefatos</a>
+      <a class="nav-link active" href="levels.html">Níveis</a>
+    </div>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <rect x="2" y="5" width="16" height="2" rx="1" fill="currentColor"/>
+        <rect x="2" y="9" width="16" height="2" rx="1" fill="currentColor"/>
+        <rect x="2" y="13" width="16" height="2" rx="1" fill="currentColor"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="mobile-menu">
+  <a class="nav-mobile-link" href="index.html">← Home</a>
+  <a class="nav-mobile-link" href="index.html#labs">Labs</a>
+  <a class="nav-mobile-link" href="artifacts.html">Artefatos</a>
+  <a class="nav-mobile-link active" href="levels.html">Níveis</a>
+</div>
+
+<!-- ══════════════════════════════════════════ LEVEL OVERVIEW BAR -->
+<div class="level-bar-wrap" id="level-bar">
+  <div class="level-bar">
+    <div class="level-bar-item">
+      <button class="level-bar-chip lb-e1" onclick="scrollToLevel('e1')" id="lbchip-e1">
+        <span class="level-bar-badge">E1</span>
+        <span class="level-bar-name">Junior</span>
+        <span class="level-bar-sub">0–2 anos</span>
+      </button>
+    </div>
+    <div class="level-bar-connector"></div>
+    <div class="level-bar-item">
+      <button class="level-bar-chip lb-e2" onclick="scrollToLevel('e2')" id="lbchip-e2">
+        <span class="level-bar-badge">E2</span>
+        <span class="level-bar-name">Mid</span>
+        <span class="level-bar-sub">2–4 anos</span>
+      </button>
+    </div>
+    <div class="level-bar-connector"></div>
+    <div class="level-bar-item">
+      <button class="level-bar-chip lb-e3" onclick="scrollToLevel('e3')" id="lbchip-e3">
+        <span class="level-bar-badge">E3</span>
+        <span class="level-bar-name">Senior</span>
+        <span class="level-bar-sub">4–7 anos</span>
+      </button>
+    </div>
+    <div class="level-bar-connector"></div>
+    <div class="level-bar-item">
+      <button class="level-bar-chip lb-e4" onclick="scrollToLevel('e4')" id="lbchip-e4">
+        <span class="level-bar-badge">E4</span>
+        <span class="level-bar-name">Staff</span>
+        <span class="level-bar-sub">7+ anos</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<main class="page">
+
+  <!-- ═══════════════════════════════════════════════ BREADCRUMB -->
+  <nav class="breadcrumb">
+    <a href="index.html">← Home</a>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-current">Níveis — Jornada E1 → E4</span>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════ HERO -->
+  <section class="hero">
+    <div class="hero-pill">
+      <span class="hero-pill-dot"></span>
+      Jornada de Carreira FORGE
+    </div>
+    <h1>De E1 a E4 — evolua com <em>propósito</em></h1>
+    <p class="hero-sub">Trilhas, laboratórios, certificações e marcos claros para cada nível de senioridade. Do primeiro deploy autônomo à liderança técnica de squad.</p>
+    <div class="hero-stats">
+      <div class="hero-chip">
+        <span class="hero-chip-dot" style="background:var(--cyan)"></span>
+        4 Níveis
+      </div>
+      <div class="hero-chip">
+        <span class="hero-chip-dot" style="background:var(--purple)"></span>
+        8 Labs
+      </div>
+      <div class="hero-chip">
+        <span class="hero-chip-dot" style="background:var(--yellow)"></span>
+        64h de Conteúdo
+      </div>
+      <div class="hero-chip">
+        <span class="hero-chip-dot" style="background:var(--green)"></span>
+        4 Certificações
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ E1 SECTION -->
+  <section class="level-section lv-e1" id="level-e1">
+    <div class="level-header">
+      <div class="level-number-badge">E1</div>
+      <div class="level-header-info">
+        <div class="level-phase-badge">Foundation</div>
+        <div class="level-title">Junior Engineer</div>
+        <div class="level-exp">Experiência: 0–2 anos</div>
+        <p class="level-desc">Primeiro contato com ferramentas de IA aplicadas a engenharia real. O E1 aprende a delegar tarefas simples ao Devin, entender contexto bancário e entregar features com apoio de facilitador.</p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-grid">
+      <div class="stat-card lv-e1">
+        <div class="stat-label">Duração típica no nível</div>
+        <div class="stat-value accented">12–18 meses</div>
+      </div>
+      <div class="stat-card lv-e1">
+        <div class="stat-label">Conteúdo FORGE</div>
+        <div class="stat-value accented">8h</div>
+        <div class="stat-note">LAB 01 + LAB 02</div>
+      </div>
+      <div class="stat-card lv-e1">
+        <div class="stat-label">Certificação</div>
+        <div class="stat-value" style="font-size:15px">FORGE Foundation</div>
+        <div class="stat-note">Mercado: AWS Cloud Practitioner · GitHub Foundations</div>
+      </div>
+    </div>
+
+    <!-- Competências + Tracks -->
+    <div class="level-content-grid">
+      <div class="level-block lv-e1">
+        <div class="level-block-title">Competências ao final do E1</div>
+        <ul class="comp-list">
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Executar sessão Devin do prompt ao deploy com supervisão</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Identificar quando revisar vs. aprovar plano do Devin</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Escrever prompt estruturado com contexto bancário (LGPD, SLA)</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Executar workflow Kiro existente e interpretar resultados</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Distinguir orquestração sequencial vs. paralela</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Usar checklist de revisão de código gerado por agente</span></li>
+          <li class="comp-item"><span class="comp-icon">🔒</span><span class="comp-text locked">Criar templates de prompt reutilizáveis<span class="comp-locked-badge">E2</span></span></li>
+          <li class="comp-item"><span class="comp-icon">🔒</span><span class="comp-text locked">Análise de risco em plano Devin<span class="comp-locked-badge">E2</span></span></li>
+        </ul>
+      </div>
+      <div class="level-block lv-e1">
+        <div class="level-block-title">Trilhas Capacitatórias</div>
+        <div class="track-list">
+          <div class="track-item lv-e1"><span class="track-dot"></span>Ciclo de Desenvolvimento (Foundation) — primeiros passos</div>
+          <div class="track-item lv-e1"><span class="track-dot"></span>Segurança &amp; Compliance — conceitos básicos LGPD/BACEN</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lab Table -->
+    <div class="lab-table-wrap lv-e1">
+      <div class="lab-table-header">
+        <div class="level-block-title" style="margin:0">Labs E1 — Roadmap de Laboratórios</div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Lab</th>
+            <th>Título</th>
+            <th>Duração</th>
+            <th>Status</th>
+            <th>Objetivo E1</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="lab-id lv-e1">LAB 01</span></td>
+            <td>First Deploy with Devin</td>
+            <td>4h</td>
+            <td><span class="lab-status-badge available">✅ Disponível</span></td>
+            <td>Completar com facilitador</td>
+          </tr>
+          <tr>
+            <td><span class="lab-id lv-e1">LAB 02</span></td>
+            <td>API Orchestration with Kiro</td>
+            <td>4h</td>
+            <td><span class="lab-status-badge available">✅ Disponível</span></td>
+            <td>Executar workflow existente</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Promoção -->
+    <div class="full-block lv-e1">
+      <div class="full-block-title">Critérios de promoção para E2</div>
+      <div class="criteria-list">
+        <div class="criteria-item lv-e1"><span class="criteria-check"></span>LAB 01 completo com score ≥ 70/100</div>
+        <div class="criteria-item lv-e1"><span class="criteria-check"></span>LAB 02 completo (tarefa base)</div>
+        <div class="criteria-item lv-e1"><span class="criteria-check"></span>Pelo menos 3 sessões Devin em tarefas reais (não apenas lab)</div>
+        <div class="criteria-item lv-e1"><span class="criteria-check"></span>Entrega documentada de feature com Devin em repositório do time</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════════════════════════════════════════════ E2 SECTION -->
+  <section class="level-section lv-e2" id="level-e2">
+    <div class="level-header">
+      <div class="level-number-badge">E2</div>
+      <div class="level-header-info">
+        <div class="level-phase-badge">Foundation → Amplify</div>
+        <div class="level-title">Mid Engineer</div>
+        <div class="level-exp">Experiência: 2–4 anos</div>
+        <p class="level-desc">O E2 opera com autonomia crescente: analisa planos antes de aprovar, cria templates de prompt para o time e começa a trabalhar com CI/CD e code review automatizado.</p>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card lv-e2">
+        <div class="stat-label">Duração típica no nível</div>
+        <div class="stat-value accented">18–24 meses</div>
+      </div>
+      <div class="stat-card lv-e2">
+        <div class="stat-label">Conteúdo FORGE</div>
+        <div class="stat-value accented">22h</div>
+        <div class="stat-note">LAB 01–04 — acumulado desde E1</div>
+      </div>
+      <div class="stat-card lv-e2">
+        <div class="stat-label">Certificação</div>
+        <div class="stat-value" style="font-size:15px">FORGE Amplify</div>
+        <div class="stat-note">Mercado: AWS Developer Assoc. · GitHub Actions</div>
+      </div>
+    </div>
+
+    <div class="level-content-grid">
+      <div class="level-block lv-e2">
+        <div class="level-block-title">Competências ao final do E2</div>
+        <ul class="comp-list">
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Todas as competências E1</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Analisar plano Devin e identificar riscos antes de aprovar</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Implementar workflow Kiro com error handling e retry com idempotência</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Comparar Devin vs. desenvolvimento manual com métricas concretas</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Criar Dockerfile multi-stage e pipeline CI/CD básico</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Escrever testes automatizados para serviços com lógica financeira</span></li>
+          <li class="comp-item"><span class="comp-icon">🔒</span><span class="comp-text locked">Avaliar trade-offs arquiteturais<span class="comp-locked-badge">E3</span></span></li>
+          <li class="comp-item"><span class="comp-icon">🔒</span><span class="comp-text locked">Criar padrões de time<span class="comp-locked-badge">E3</span></span></li>
+        </ul>
+      </div>
+      <div class="level-block lv-e2">
+        <div class="level-block-title">Trilhas Capacitatórias</div>
+        <div class="track-list">
+          <div class="track-item lv-e2"><span class="track-dot"></span>Ciclo de Desenvolvimento (avançado)</div>
+          <div class="track-item lv-e2"><span class="track-dot"></span>Qualidade &amp; Testes</div>
+          <div class="track-item lv-e2"><span class="track-dot"></span>DevOps &amp; Plataforma (básico)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lab-table-wrap lv-e2">
+      <div class="lab-table-header">
+        <div class="level-block-title" style="margin:0">Labs E2 — Roadmap de Laboratórios</div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Lab</th>
+            <th>Título</th>
+            <th>Duração</th>
+            <th>Status</th>
+            <th>Objetivo E2</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="lab-id lv-e2">LAB 01</span></td>
+            <td>First Deploy with Devin</td>
+            <td>4h</td>
+            <td><span class="lab-status-badge available">✅ Disponível</span></td>
+            <td>Camada E2: análise de plano</td>
+          </tr>
+          <tr>
+            <td><span class="lab-id lv-e2">LAB 02</span></td>
+            <td>API Orchestration with Kiro</td>
+            <td>6h</td>
+            <td><span class="lab-status-badge available">✅ Disponível</span></td>
+            <td>Camada E2: error handling + idempotência</td>
+          </tr>
+          <tr class="lab-locked">
+            <td><span class="lab-id lv-e2">LAB 03</span></td>
+            <td>Automated Code Review</td>
+            <td>4h</td>
+            <td><span class="lab-status-badge soon">🔒 Em breve</span></td>
+            <td>Code review automatizado</td>
+          </tr>
+          <tr class="lab-locked">
+            <td><span class="lab-id lv-e2">LAB 04</span></td>
+            <td>CI/CD Pipeline AI-Driven</td>
+            <td>8h</td>
+            <td><span class="lab-status-badge soon">🔒 Em breve</span></td>
+            <td>Pipeline completo</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="full-block lv-e2">
+      <div class="full-block-title">Critérios de promoção para E3</div>
+      <div class="criteria-list">
+        <div class="criteria-item lv-e2"><span class="criteria-check"></span>LAB 01–04 completos com critérios E2</div>
+        <div class="criteria-item lv-e2"><span class="criteria-check"></span>1 template de prompt criado e adotado pelo time</div>
+        <div class="criteria-item lv-e2"><span class="criteria-check"></span>Evidência de análise de plano documentada em PR de código gerado por agente</div>
+        <div class="criteria-item lv-e2"><span class="criteria-check"></span>Pipeline CI/CD funcional em pelo menos 1 serviço real</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════════════════════════════════════════════ E3 SECTION -->
+  <section class="level-section lv-e3" id="level-e3">
+    <div class="level-header">
+      <div class="level-number-badge">E3</div>
+      <div class="level-header-info">
+        <div class="level-phase-badge">Amplify → Orchestrate</div>
+        <div class="level-title">Senior Engineer</div>
+        <div class="level-exp">Experiência: 4–7 anos</div>
+        <p class="level-desc">O E3 multiplica o time: define padrões, cria templates reutilizáveis, toma decisões arquiteturais e opera com multi-agent workflows. Lidera pelo exemplo técnico.</p>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card lv-e3">
+        <div class="stat-label">Duração típica no nível</div>
+        <div class="stat-value accented">24–36 meses</div>
+      </div>
+      <div class="stat-card lv-e3">
+        <div class="stat-label">Conteúdo FORGE</div>
+        <div class="stat-value accented">36h</div>
+        <div class="stat-note">LAB 01–06 — acumulado desde E1</div>
+      </div>
+      <div class="stat-card lv-e3">
+        <div class="stat-label">Certificação</div>
+        <div class="stat-value" style="font-size:15px">FORGE Orchestrate</div>
+        <div class="stat-note">Mercado: AWS SAA · Kubernetes CKAD · GitHub Adv. Sec.</div>
+      </div>
+    </div>
+
+    <div class="level-content-grid">
+      <div class="level-block lv-e3">
+        <div class="level-block-title">Competências ao final do E3</div>
+        <ul class="comp-list">
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Todas as competências E2</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Avaliar trade-offs Devin vs. desenvolvimento manual com critérios objetivos</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Criar templates de workflow Kiro reutilizáveis com BIAN domain mapping</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Projetar sistemas multi-agent com separação de responsabilidades</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Definir padrões de compliance (LGPD, BACEN 4.658, PCI-DSS) para o time</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Conduzir security review de PRs com código gerado por agente</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Criar context/memory systems para agentes especializados</span></li>
+          <li class="comp-item"><span class="comp-icon">🔒</span><span class="comp-text locked">Framework de certificação de outros engenheiros<span class="comp-locked-badge">E4</span></span></li>
+          <li class="comp-item"><span class="comp-icon">🔒</span><span class="comp-text locked">Visão de produto para adoção org-wide de IA<span class="comp-locked-badge">E4</span></span></li>
+        </ul>
+      </div>
+      <div class="level-block lv-e3">
+        <div class="level-block-title">Trilhas Capacitatórias</div>
+        <div class="track-list">
+          <div class="track-item lv-e3"><span class="track-dot"></span>Todas as trilhas E2</div>
+          <div class="track-item lv-e3"><span class="track-dot"></span>Arquitetura Bancária</div>
+          <div class="track-item lv-e3"><span class="track-dot"></span>Segurança &amp; Compliance (avançado)</div>
+          <div class="track-item lv-e3"><span class="track-dot"></span>Engenharia de Times (início)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lab-table-wrap lv-e3">
+      <div class="lab-table-header">
+        <div class="level-block-title" style="margin:0">Labs E3 — Roadmap de Laboratórios</div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Lab</th>
+            <th>Título</th>
+            <th>Duração</th>
+            <th>Status</th>
+            <th>Objetivo E3</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="lab-id lv-e3">LAB 01</span></td>
+            <td>First Deploy with Devin</td>
+            <td>4h</td>
+            <td><span class="lab-status-badge available">✅ Disponível</span></td>
+            <td>Camada E3: templates + trade-offs</td>
+          </tr>
+          <tr>
+            <td><span class="lab-id lv-e3">LAB 02</span></td>
+            <td>API Orchestration with Kiro</td>
+            <td>6h</td>
+            <td><span class="lab-status-badge available">✅ Disponível</span></td>
+            <td>Camada E3: LGPD + BIAN + template</td>
+          </tr>
+          <tr class="lab-locked">
+            <td><span class="lab-id lv-e3">LAB 03</span></td>
+            <td>Automated Code Review</td>
+            <td>4h</td>
+            <td><span class="lab-status-badge soon">🔒 Em breve</span></td>
+            <td>Padrões de review para o time</td>
+          </tr>
+          <tr class="lab-locked">
+            <td><span class="lab-id lv-e3">LAB 04</span></td>
+            <td>CI/CD Pipeline AI-Driven</td>
+            <td>8h</td>
+            <td><span class="lab-status-badge soon">🔒 Em breve</span></td>
+            <td>Pipeline completo com security</td>
+          </tr>
+          <tr class="lab-locked">
+            <td><span class="lab-id lv-e3">LAB 05</span></td>
+            <td>Multi-Agent Workflow</td>
+            <td>8h</td>
+            <td><span class="lab-status-badge soon">🔒 Em breve</span></td>
+            <td>Design de sistemas multi-agent</td>
+          </tr>
+          <tr class="lab-locked">
+            <td><span class="lab-id lv-e3">LAB 06</span></td>
+            <td>Context and Memory Systems</td>
+            <td>6h</td>
+            <td><span class="lab-status-badge soon">🔒 Em breve</span></td>
+            <td>Agentes com memória especializada</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="full-block lv-e3">
+      <div class="full-block-title">Critérios de promoção para E4</div>
+      <div class="criteria-list">
+        <div class="criteria-item lv-e3"><span class="criteria-check"></span>LAB 01–06 completos com critérios E3</div>
+        <div class="criteria-item lv-e3"><span class="criteria-check"></span>1 sistema multi-agent em produção com ownership documentado</div>
+        <div class="criteria-item lv-e3"><span class="criteria-check"></span>Playbook de delegação Devin adotado pelo time (mínimo 3 engenheiros)</div>
+        <div class="criteria-item lv-e3"><span class="criteria-check"></span>Apresentação técnica para banca FORGE com aprovação ≥ 80/100</div>
+        <div class="criteria-item lv-e3"><span class="criteria-check"></span>1 eng E1 ou E2 mentoreado formalmente com evolução documentada</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- ═══════════════════════════════════════════════ E4 SECTION -->
+  <section class="level-section lv-e4" id="level-e4">
+    <div class="level-header">
+      <div class="level-number-badge">E4</div>
+      <div class="level-header-info">
+        <div class="level-phase-badge">Orchestrate → Master</div>
+        <div class="level-title">Staff Engineer</div>
+        <div class="level-exp">Experiência: 7+ anos</div>
+        <p class="level-desc">O E4 é referência técnica da organização: define frameworks que outros seguem, certifica engenheiros, e projeta a adoção de IA em escala para o banco. Seu output é multiplicador.</p>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card lv-e4">
+        <div class="stat-label">Duração típica no nível</div>
+        <div class="stat-value accented">Contínuo</div>
+        <div class="stat-note">Sem prazo de promoção</div>
+      </div>
+      <div class="stat-card lv-e4">
+        <div class="stat-label">Conteúdo FORGE</div>
+        <div class="stat-value accented">64h</div>
+        <div class="stat-note">LAB 01–08 — currículo completo</div>
+      </div>
+      <div class="stat-card lv-e4">
+        <div class="stat-label">Certificação</div>
+        <div class="stat-value" style="font-size:15px">FORGE Master</div>
+        <div class="stat-note">Mercado: AWS SAP · CKA · Terraform · BIAN</div>
+      </div>
+    </div>
+
+    <div class="level-content-grid">
+      <div class="level-block lv-e4">
+        <div class="level-block-title">Competências ao final do E4</div>
+        <ul class="comp-list">
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Todas as competências E3</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Definir playbook de delegação para 50+ engenheiros</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Projetar framework de orquestração bancária reutilizável</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Conduzir banca técnica de certificação FORGE para outros níveis</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Tomar decisões arquiteturais com impacto org-wide documentado</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Criar e manter Design System de engenharia com IA como guardião</span></li>
+          <li class="comp-item"><span class="comp-icon">✅</span><span class="comp-text">Apresentar para liderança executiva o roadmap de adoção de IA</span></li>
+        </ul>
+      </div>
+      <div class="level-block lv-e4">
+        <div class="level-block-title">Trilhas Capacitatórias</div>
+        <div class="track-list">
+          <div class="track-item lv-e4"><span class="track-dot"></span>TODAS as trilhas capacitatórias</div>
+          <div class="track-item lv-e4"><span class="track-dot"></span>Engenharia de Times (liderança)</div>
+          <div class="track-item lv-e4"><span class="track-dot"></span>Ciclo de Desenvolvimento (definição de padrões org)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lab-table-wrap lv-e4">
+      <div class="lab-table-header">
+        <div class="level-block-title" style="margin:0">Labs E4 — Currículo Completo</div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Lab</th>
+            <th>Título</th>
+            <th>Duração</th>
+            <th>Status</th>
+            <th>Objetivo E4</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="lab-id lv-e4">LAB 01</span></td>
+            <td>First Deploy with Devin</td>
+            <td>4h</td>
+            <td><span class="lab-status-badge available">✅ Disponível</span></td>
+            <td>Framework de onboarding para 50+</td>
+          </tr>
+          <tr>
+            <td><span class="lab-id lv-e4">LAB 02</span></td>
+            <td>API Orchestration with Kiro</td>
+            <td>6h</td>
+            <td><span class="lab-status-badge available">✅ Disponível</span></td>
+            <td>Padrões de orquestração org-wide</td>
+          </tr>
+          <tr class="lab-locked">
+            <td><span class="lab-id lv-e4">LAB 03</span></td>
+            <td>Automated Code Review</td>
+            <td>4h</td>
+            <td><span class="lab-status-badge soon">🔒 Em breve</span></td>
+            <td>Design System como guardião de qualidade</td>
+          </tr>
+          <tr class="lab-locked">
+            <td><span class="lab-id lv-e4">LAB 04</span></td>
+            <td>CI/CD Pipeline AI-Driven</td>
+            <td>8h</td>
+            <td><span class="lab-status-badge soon">🔒 Em breve</span></td>
+            <td>Pipeline padrão para todos os serviços</td>
+          </tr>
+          <tr class="lab-locked">
+            <td><span class="lab-id lv-e4">LAB 05</span></td>
+            <td>Multi-Agent Workflow</td>
+            <td>8h</td>
+            <td><span class="lab-status-badge soon">🔒 Em breve</span></td>
+            <td>Framework multi-agent da organização</td>
+          </tr>
+          <tr class="lab-locked">
+            <td><span class="lab-id lv-e4">LAB 06</span></td>
+            <td>Context and Memory Systems</td>
+            <td>6h</td>
+            <td><span class="lab-status-badge soon">🔒 Em breve</span></td>
+            <td>Memória institucional em agentes</td>
+          </tr>
+          <tr class="lab-locked">
+            <td><span class="lab-id lv-e4">LAB 07</span></td>
+            <td>Squad Project Simulation</td>
+            <td>12h</td>
+            <td><span class="lab-status-badge soon">🔒 Em breve</span></td>
+            <td>Liderar squad de 5+ engenheiros</td>
+          </tr>
+          <tr class="lab-locked">
+            <td><span class="lab-id lv-e4">LAB 08</span></td>
+            <td>Final Certification Project</td>
+            <td>16h</td>
+            <td><span class="lab-status-badge soon">🔒 Em breve</span></td>
+            <td>Projeto final + banca técnica</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="full-block lv-e4">
+      <div class="full-block-title">Critérios de certificação FORGE Master</div>
+      <div class="criteria-list">
+        <div class="criteria-item lv-e4"><span class="criteria-check"></span>LAB 01–08 completos com critérios E4</div>
+        <div class="criteria-item lv-e4"><span class="criteria-check"></span>Projeto final aprovado por banca técnica com score ≥ 85/100</div>
+        <div class="criteria-item lv-e4"><span class="criteria-check"></span>Mínimo 2 engenheiros E1/E2/E3 certificados sob sua orientação</div>
+        <div class="criteria-item lv-e4"><span class="criteria-check"></span>Framework de adoção de IA documentado e aprovado pela liderança técnica</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ COMPARISON TABLE -->
+  <section class="section">
+    <div class="section-label">Visão geral</div>
+    <h2 class="section-title">Comparativo por nível</h2>
+    <div class="compare-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="th-e1">E1 Junior</th>
+            <th class="th-e2">E2 Mid</th>
+            <th class="th-e3">E3 Senior</th>
+            <th class="th-e4">E4 Staff</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Experiência</td>
+            <td>0–2 anos</td>
+            <td>2–4 anos</td>
+            <td>4–7 anos</td>
+            <td>7+ anos</td>
+          </tr>
+          <tr>
+            <td>Fase FORGE</td>
+            <td>Foundation</td>
+            <td>Foundation → Amplify</td>
+            <td>Amplify → Orchestrate</td>
+            <td>Orchestrate → Master</td>
+          </tr>
+          <tr>
+            <td>Labs completados</td>
+            <td>LAB 01–02</td>
+            <td>LAB 01–04</td>
+            <td>LAB 01–06</td>
+            <td>LAB 01–08</td>
+          </tr>
+          <tr>
+            <td>Carga horária FORGE</td>
+            <td>8h</td>
+            <td>22h</td>
+            <td>36h</td>
+            <td>64h</td>
+          </tr>
+          <tr>
+            <td>Tempo típico no nível</td>
+            <td>12–18 meses</td>
+            <td>18–24 meses</td>
+            <td>24–36 meses</td>
+            <td>Contínuo</td>
+          </tr>
+          <tr>
+            <td>Autonomia com Devin</td>
+            <td>Com facilitador</td>
+            <td>Par sênior</td>
+            <td>Autônomo</td>
+            <td>Referência</td>
+          </tr>
+          <tr>
+            <td>Certificação FORGE</td>
+            <td>Foundation</td>
+            <td>Amplify</td>
+            <td>Orchestrate</td>
+            <td>Master</td>
+          </tr>
+          <tr>
+            <td>Cert. Mercado</td>
+            <td style="font-size:11px">AWS Cloud Practitioner · GitHub Foundations</td>
+            <td style="font-size:11px">AWS Developer Assoc. · GitHub Actions</td>
+            <td style="font-size:11px">AWS SAA · CKAD · GitHub Adv. Sec.</td>
+            <td style="font-size:11px">AWS SAP · CKA · Terraform · BIAN</td>
+          </tr>
+          <tr>
+            <td>Mentoria</td>
+            <td>Recebe</td>
+            <td>Recebe + dá início</td>
+            <td>Dá</td>
+            <td>Certifica outros</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ CERTIFICATION SECTION -->
+  <section class="section">
+    <div class="section-label">Credenciais</div>
+    <h2 class="section-title">Certificações FORGE + Mercado</h2>
+    <p style="font-size:14px;color:var(--text-dim);margin-bottom:32px;max-width:680px;line-height:1.65">Cada nível conquista a certificação FORGE interna <em>e</em> as certificações de mercado reconhecidas globalmente — ampliando seu valor profissional além da NTT DATA.</p>
+    <div class="cert-grid">
+      <!-- Foundation -->
+      <div class="cert-card cert-e1">
+        <div class="cert-icon">🏅</div>
+        <span class="cert-level-badge">E1</span>
+        <div class="cert-name">Foundation</div>
+        <div class="cert-rows">
+          <div class="cert-row">
+            <div class="cert-row-label">Requisito FORGE</div>
+            <div class="cert-row-val">LAB 01–02 completos + 3 sessões Devin reais</div>
+          </div>
+          <div class="cert-row">
+            <div class="cert-row-label">Avaliação</div>
+            <div class="cert-row-val">Entrega documentada em repositório real</div>
+          </div>
+          <div class="cert-row">
+            <div class="cert-row-label">Certificações de Mercado Recomendadas</div>
+            <div class="mkt-cert-list">
+              <span class="mkt-cert-badge aws">AWS Cloud Practitioner</span>
+              <span class="mkt-cert-badge gh">GitHub Foundations</span>
+              <span class="mkt-cert-badge devin">Devin Certified (beta)</span>
+            </div>
+          </div>
+        </div>
+        <div class="cert-validity">Validade FORGE: 2 anos (renovação via labs)</div>
+      </div>
+      <!-- Amplify -->
+      <div class="cert-card cert-e2">
+        <div class="cert-icon">🥈</div>
+        <span class="cert-level-badge">E2</span>
+        <div class="cert-name">Amplify</div>
+        <div class="cert-rows">
+          <div class="cert-row">
+            <div class="cert-row-label">Requisito FORGE</div>
+            <div class="cert-row-val">LAB 01–04 + template adotado pelo time</div>
+          </div>
+          <div class="cert-row">
+            <div class="cert-row-label">Avaliação</div>
+            <div class="cert-row-val">PR com código agente revisado + pipeline funcional</div>
+          </div>
+          <div class="cert-row">
+            <div class="cert-row-label">Certificações de Mercado Recomendadas</div>
+            <div class="mkt-cert-list">
+              <span class="mkt-cert-badge aws">AWS Developer Associate</span>
+              <span class="mkt-cert-badge gh">GitHub Actions</span>
+            </div>
+          </div>
+        </div>
+        <div class="cert-validity">Validade FORGE: 2 anos</div>
+      </div>
+      <!-- Orchestrate -->
+      <div class="cert-card cert-e3">
+        <div class="cert-icon">🥇</div>
+        <span class="cert-level-badge">E3</span>
+        <div class="cert-name">Orchestrate</div>
+        <div class="cert-rows">
+          <div class="cert-row">
+            <div class="cert-row-label">Requisito FORGE</div>
+            <div class="cert-row-val">LAB 01–06 + banca técnica ≥ 80/100</div>
+          </div>
+          <div class="cert-row">
+            <div class="cert-row-label">Avaliação</div>
+            <div class="cert-row-val">Apresentação técnica para banca (30 min)</div>
+          </div>
+          <div class="cert-row">
+            <div class="cert-row-label">Certificações de Mercado Recomendadas</div>
+            <div class="mkt-cert-list">
+              <span class="mkt-cert-badge aws">AWS Solutions Architect Assoc.</span>
+              <span class="mkt-cert-badge k8s">Kubernetes CKAD</span>
+              <span class="mkt-cert-badge gh">GitHub Advanced Security</span>
+            </div>
+          </div>
+        </div>
+        <div class="cert-validity">Validade FORGE: 3 anos</div>
+      </div>
+      <!-- Master -->
+      <div class="cert-card cert-e4">
+        <div class="cert-icon">🏆</div>
+        <span class="cert-level-badge">E4</span>
+        <div class="cert-name">Master</div>
+        <div class="cert-rows">
+          <div class="cert-row">
+            <div class="cert-row-label">Requisito FORGE</div>
+            <div class="cert-row-val">LAB 01–08 + projeto final + 2 engenheiros certificados</div>
+          </div>
+          <div class="cert-row">
+            <div class="cert-row-label">Avaliação</div>
+            <div class="cert-row-val">Banca técnica formal (60 min) + projeto em produção</div>
+          </div>
+          <div class="cert-row">
+            <div class="cert-row-label">Certificações de Mercado Recomendadas</div>
+            <div class="mkt-cert-list">
+              <span class="mkt-cert-badge aws">AWS Solutions Architect Prof.</span>
+              <span class="mkt-cert-badge k8s">Kubernetes CKA</span>
+              <span class="mkt-cert-badge tf">Terraform Associate</span>
+              <span class="mkt-cert-badge bian">BIAN Certified</span>
+            </div>
+          </div>
+        </div>
+        <div class="cert-validity">Validade FORGE: 5 anos</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ TIMELINE -->
+  <section class="section">
+    <div class="section-label">Progressão</div>
+    <h2 class="section-title">Quanto tempo leva a jornada completa?</h2>
+    <div class="timeline-wrap">
+      <div class="timeline-track">
+        <div class="timeline-node tl-e1">
+          <div class="timeline-dot">E1</div>
+          <div class="timeline-content">
+            <div class="timeline-label">Junior</div>
+            <div class="timeline-period">Mês 0–18</div>
+            <div class="timeline-cert">Foundation</div>
+          </div>
+        </div>
+        <div class="timeline-node tl-e2">
+          <div class="timeline-dot">E2</div>
+          <div class="timeline-content">
+            <div class="timeline-label">Mid</div>
+            <div class="timeline-period">Mês 18–42</div>
+            <div class="timeline-cert">Amplify</div>
+          </div>
+        </div>
+        <div class="timeline-node tl-e3">
+          <div class="timeline-dot">E3</div>
+          <div class="timeline-content">
+            <div class="timeline-label">Senior</div>
+            <div class="timeline-period">Mês 42–78</div>
+            <div class="timeline-cert">Orchestrate</div>
+          </div>
+        </div>
+        <div class="timeline-node tl-e4">
+          <div class="timeline-dot">E4</div>
+          <div class="timeline-content">
+            <div class="timeline-label">Staff</div>
+            <div class="timeline-period">Mês 78+</div>
+            <div class="timeline-cert">Master</div>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-total">
+        Total mínimo realista: <span>6–7 anos</span> para E4
+      </div>
+      <div class="timeline-note">
+        <strong>O FORGE acelera a curva de aprendizado</strong> — as certificações reconhecem o que você já sabe, não impõem velocidade artificial. Engenheiros com experiência prévia podem percorrer os marcos de forma mais rápida, desde que demonstrem as competências em contextos reais.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ BOTTOM CTA -->
+  <div class="cta-row">
+    <a class="cta-btn" href="index.html">← Voltar para Home</a>
+    <a class="cta-btn primary" href="index.html#labs">Ver Labs disponíveis →</a>
+    <span class="cta-sep"></span>
+    <a class="cta-btn" href="artifacts.html">Ver artefatos por nível →</a>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════ FOOTER -->
+<footer style="border-top: 1px solid var(--border); padding: 32px; text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 40px;">
+  FORGE Engineering Training Platform &bull; NTT DATA &bull; 2024
+</footer>
+
+<script>
+  // ─── Hamburger menu ────────────────────────────────────────
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  hamburger.addEventListener('click', () => {
+    mobileMenu.classList.toggle('open');
+  });
+
+  // ─── Scroll to level section ───────────────────────────────
+  function scrollToLevel(id) {
+    const el = document.getElementById('level-' + id);
+    if (!el) return;
+    const levelBarH = document.getElementById('level-bar').offsetHeight;
+    const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 68;
+    const offset = navH + levelBarH + 16;
+    const top = el.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+
+  // ─── IntersectionObserver: highlight active level in bar ───
+  const levelIds = ['e1', 'e2', 'e3', 'e4'];
+  const chips = {};
+  levelIds.forEach(id => {
+    chips[id] = document.getElementById('lbchip-' + id);
+  });
+
+  const observerOptions = {
+    root: null,
+    rootMargin: '-20% 0px -60% 0px',
+    threshold: 0
+  };
+
+  let activeId = null;
+
+  function setActiveChip(id) {
+    if (activeId === id) return;
+    activeId = id;
+    levelIds.forEach(lid => {
+      chips[lid].classList.toggle('active-bar', lid === id);
+    });
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id.replace('level-', '');
+        setActiveChip(id);
+      }
+    });
+  }, observerOptions);
+
+  levelIds.forEach(id => {
+    const el = document.getElementById('level-' + id);
+    if (el) observer.observe(el);
+  });
+
+  // ─── Level bar shadow on scroll ────────────────────────────
+  const levelBar = document.getElementById('level-bar');
+  const heroEl = document.querySelector('.hero');
+  window.addEventListener('scroll', () => {
+    const heroBottom = heroEl.getBoundingClientRect().bottom;
+    if (heroBottom <= 68) {
+      levelBar.classList.add('shadowed');
+    } else {
+      levelBar.classList.remove('shadowed');
+    }
+  }, { passive: true });
+</script>
+</body>
+</html>
